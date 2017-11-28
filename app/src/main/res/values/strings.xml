@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Zakupoholik</string>
+    <string name="title_activity_login">Zaloguj się</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_login">Login</string>
+    <string name="prompt_password">Hasło</string>
+    <string name="action_register">Zarejestruj się</string>
+    <string name="action_sign_in">Zaloguj się</string>
+    <string name="error_invalid_email">Niepoprawny mail</string>
+    <string name="error_invalid_password">Zbyt krótkie hasło</string>
+    <string name="error_incorrect_password">Niepoprawne hasło</string>
+    <string name="error_field_required">Pole wymagane</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!-- Strings related to ... -->
+</resources>
