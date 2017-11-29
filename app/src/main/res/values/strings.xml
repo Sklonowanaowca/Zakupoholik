@@ -15,5 +15,9 @@
         completions."
     </string>
 
-    <!-- Strings related to ... -->
+    <!-- Strings related to register -->
+    <string name="name">Imię</string>
+    <string name="login">Login</string>
+    <string name="passwd">Hasło</string>
+    <string name="email">Email</string>
 </resources>

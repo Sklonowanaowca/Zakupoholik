@@ -3,6 +3,8 @@ package com.example.monia.zakupoholik;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -29,6 +31,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mLoginEditText;
     private EditText mPasswordEditText;
     private Button mZalogujSieButton;
-    private Button mZarejestrujSieButton;
+    private TextView mZarejestrujSieTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +62,54 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mLoginEditText = (EditText) findViewById(R.id.login);
+        mLoginEditText = (EditText) findViewById(R.id.et_login);
         mPasswordEditText = (EditText) findViewById(R.id.et_password);
 
         mZalogujSieButton = (Button) findViewById(R.id.button_log_in);
-        mZarejestrujSieButton = (Button) findViewById(R.id.register_button);
+        mZarejestrujSieTextView = (TextView) findViewById(R.id.tv_register);
+
+        mZarejestrujSieTextView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent zarejesrujSie = new Intent(LoginActivity.this, RegisterActivity.class);
+                LoginActivity.this.startActivity(zarejesrujSie);
+            }
+        });
+
+        mZalogujSieButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String login = mLoginEditText.getText().toString();
+                final String password = mPasswordEditText.getText().toString();
+                Response.Listener<String> responseListener = new Response.Listener<String>(){
+
+                    @Override
+                    public void onResponse(String response) {// response from login.php (json string)
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            boolean success = jsonObject.getBoolean("success");
+                            if(success){
+                                String imie = jsonObject.getString("imie");
+                                Intent zalogujSie = new Intent(LoginActivity.this, ListsActivity.class);
+                                zalogujSie.putExtra(Intent.EXTRA_TEXT, imie);
+                                LoginActivity.this.startActivity(zalogujSie);
+                            } else{
+                                String message = jsonObject.getString("message");
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                builder.setMessage(message).setNegativeButton("Spróbuj jeszcze raz", null).create().show();
+                                mLoginEditText.setText("");
+                                mPasswordEditText.setText("");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                LoginRequest loginRequest = new LoginRequest(login, password, responseListener);
+                RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+                queue.add(loginRequest);
+            }
+        });
     }
 
     private boolean isLoginValid(String login) {
