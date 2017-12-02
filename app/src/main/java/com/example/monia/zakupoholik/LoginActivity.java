@@ -50,6 +50,9 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<String> {
 
+    public final static String KEY_IMIE = "KEY_IMIE";
+    public final static String KEY_ID_UZYTKOWNIKA = "KEY_ID_UZYTKOWNIKA";
+
     private ProgressBar mProgressBar;
     private EditText mLoginEditText;
     private EditText mPasswordEditText;
@@ -90,9 +93,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             boolean success = jsonObject.getBoolean("success");
                             if(success){
                                 String imie = jsonObject.getString("imie");
-                                Intent zalogujSie = new Intent(LoginActivity.this, ListsActivity.class);
-                                zalogujSie.putExtra(Intent.EXTRA_TEXT, imie);
-                                LoginActivity.this.startActivity(zalogujSie);
+                                int idUzytkownika = jsonObject.getInt("id_uzytkownika");
+                                Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
+                                listy.putExtra(KEY_IMIE, imie);
+                                listy.putExtra(KEY_ID_UZYTKOWNIKA, idUzytkownika);
+                                LoginActivity.this.startActivity(listy);
                             } else{
                                 String message = jsonObject.getString("message");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
