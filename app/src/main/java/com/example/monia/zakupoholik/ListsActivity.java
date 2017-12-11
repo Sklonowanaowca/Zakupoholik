@@ -39,7 +39,7 @@ public class ListsActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(LoginActivity.KEY_IMIE, imie);
             editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUzytkownika);
-            editor.commit();
+            editor.apply();
         }
 
         Response.Listener<String> responseListener = new Response.Listener<String>(){
