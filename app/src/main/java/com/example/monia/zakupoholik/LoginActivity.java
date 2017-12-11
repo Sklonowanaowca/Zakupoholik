@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -94,9 +95,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             if(success){
                                 String imie = jsonObject.getString("imie");
                                 int idUzytkownika = jsonObject.getInt("id_uzytkownika");
+                                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString(LoginActivity.KEY_IMIE, imie);
+                                editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUzytkownika);
+                                editor.apply();
                                 Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
-                                listy.putExtra(KEY_IMIE, imie);
-                                listy.putExtra(KEY_ID_UZYTKOWNIKA, idUzytkownika);
                                 LoginActivity.this.startActivity(listy);
                             } else{
                                 String message = jsonObject.getString("message");

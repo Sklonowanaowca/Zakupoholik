@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,60 +20,38 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ListsActivity extends AppCompatActivity {
+public class ListsActivity extends AppCompatActivity implements ListsAdapter.ListsAdapterOnClickHandler{
+    private RecyclerView mRecyclerView;
+    private TextView mErrorMessage;
+    private ListsAdapter mListsAdapter;
+    Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
-        final TextView mTextView = (TextView) findViewById(R.id.textView);
-        final TextView mJsonResponse = (TextView) findViewById(R.id.json_response);
-        final String imie;
-        final int idUzytkownika;
+        mErrorMessage = (TextView) findViewById(R.id.error_message);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
 
-        Intent dataFromLoginActivity = getIntent();
-        if(dataFromLoginActivity.hasExtra(LoginActivity.KEY_IMIE) && dataFromLoginActivity.hasExtra(LoginActivity.KEY_ID_UZYTKOWNIKA)) {
-            imie = dataFromLoginActivity.getStringExtra(LoginActivity.KEY_IMIE);
-            idUzytkownika = dataFromLoginActivity.getIntExtra(LoginActivity.KEY_ID_UZYTKOWNIKA, 0);
+        mListsAdapter = new ListsAdapter(this);
+        mRecyclerView.setAdapter(mListsAdapter);
 
-            mTextView.setText("Witaj " + imie + "! :)");
-            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(LoginActivity.KEY_IMIE, imie);
-            editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUzytkownika);
-            editor.apply();
-        }
+        loadLists();
+    }
 
+    private void loadLists(){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
-                //try {
-                    mJsonResponse.setText(response);
-//                    JSONObject jsonObject = new JSONObject(response);
-//                    JSONArray listy = jsonObject.getJSONArray("lists");
-//                    for(int i=0; i<listy.length(); i++){
-//                        JSONObject json_data = listy.getJSONObject(i);
-//                        int idLista = json_data.getInt("ID_Lista");
-//                        mTextView.append(" id Twojej listy, to: " + idLista);
-//                    }
-//                        boolean success = jsonObject.getBoolean("success");
-//                        if(success){
-//                            int idLista = listy.getString("ID_Lista");
-//                            String dataZakupow = listy.getString("Data_zakupow");
-//                            String nazwaListy = jsonObject.getString("Nazwa_listy");
-//                            Double kosztZakupow = jsonObject.getDouble("Koszt_zakupow");
-//                        } else{
-//                            String message = jsonObject.getString("message");
-//                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-//                            builder.setMessage(message).setNegativeButton("Spróbuj jeszcze raz", null).create().show();
-//                            mLoginEditText.setText("");
-//                            mPasswordEditText.setText("");
-//                        }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                String[] stringJsonArray = getDataToJsonArray(response);
+
+                mListsAdapter.setListsData(stringJsonArray);
             }
         };
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -78,6 +59,40 @@ public class ListsActivity extends AppCompatActivity {
         FetchListsRequest fetchListsRequest = new FetchListsRequest(id_user, responseListener);
         RequestQueue queue = Volley.newRequestQueue(ListsActivity.this);
         queue.add(fetchListsRequest);
+    }
 
+    private String[] getDataToJsonArray(String response){
+        String[] stringJsonArray = null;
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray listy = jsonObject.getJSONArray("lists");
+            stringJsonArray = new String[listy.length()];
+                for(int i=0; i<listy.length(); i++){
+                    JSONObject json_data = listy.getJSONObject(i);
+                    String nazwaListy = json_data.getString("Nazwa_listy");
+                    stringJsonArray[i] = nazwaListy;
+                }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return stringJsonArray;
+    }
+
+    @Override
+    public void click(String list) {
+        if(mToast  != null)
+            mToast.cancel();
+        mToast = Toast.makeText(this, list, Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
+    private void showLists(){
+        mErrorMessage.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage(){
+        mErrorMessage.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
     }
 }

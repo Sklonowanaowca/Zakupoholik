@@ -20,4 +20,9 @@
     <string name="login">Login</string>
     <string name="passwd">Hasło</string>
     <string name="email">Email</string>
+
+    <!-- Strings related to lists -->
+    <string name="error_message_lists">
+        An error has occurred.
+    </string>
 </resources>
