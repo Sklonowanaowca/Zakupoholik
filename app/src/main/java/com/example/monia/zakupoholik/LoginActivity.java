@@ -83,42 +83,42 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mZalogujSieButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String login = mLoginEditText.getText().toString();
-                final String password = mPasswordEditText.getText().toString();
-                Response.Listener<String> responseListener = new Response.Listener<String>(){
-
-                    @Override
-                    public void onResponse(String response) {// response from login.php (json string)
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            boolean success = jsonObject.getBoolean("success");
-                            if(success){
-                                String imie = jsonObject.getString("imie");
-                                int idUzytkownika = jsonObject.getInt("id_uzytkownika");
-                                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString(LoginActivity.KEY_IMIE, imie);
-                                editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUzytkownika);
-                                editor.apply();
-                                Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
-                                LoginActivity.this.startActivity(listy);
-                            } else{
-                                String message = jsonObject.getString("message");
-                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                builder.setMessage(message).setNegativeButton("Spróbuj jeszcze raz", null).create().show();
-                                mLoginEditText.setText("");
-                                mPasswordEditText.setText("");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-                LoginRequest loginRequest = new LoginRequest(login, password, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                queue.add(loginRequest);
+                loginUser();
             }
         });
+    }
+
+    private void loginUser(){
+        final String login = mLoginEditText.getText().toString();
+        final String password = mPasswordEditText.getText().toString();
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response) {// response from login.php (json string)
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+                    if(success){
+                        String imie = jsonObject.getString("imie");
+                        int idUzytkownika = jsonObject.getInt("id_uzytkownika");
+                        Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
+                        listy.putExtra("ID", idUzytkownika);
+                        listy.putExtra("IMIE", imie);
+                        LoginActivity.this.startActivity(listy);
+                    } else{
+                        String message = jsonObject.getString("message");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                        builder.setMessage(message).setNegativeButton("Spróbuj jeszcze raz", null).create().show();
+                        mLoginEditText.setText("");
+                        mPasswordEditText.setText("");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        LoginRequest loginRequest = new LoginRequest(login, password, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        queue.add(loginRequest);
     }
 
     private boolean isLoginValid(String login) {

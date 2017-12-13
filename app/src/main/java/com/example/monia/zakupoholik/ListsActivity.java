@@ -41,10 +41,20 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         mListsAdapter = new ListsAdapter(this);
         mRecyclerView.setAdapter(mListsAdapter);
 
-        loadLists();
+        Intent dataFromLoginActivity = getIntent();
+        int id_user = dataFromLoginActivity.getIntExtra("ID", 0);
+        String imie = dataFromLoginActivity.getStringExtra("IMIE");
+
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(LoginActivity.KEY_IMIE, imie);
+        editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, id_user);
+        editor.apply();
+
+        loadLists(id_user);
     }
 
-    private void loadLists(){
+    private void loadLists(Integer id_user){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
@@ -54,8 +64,6 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
                 mListsAdapter.setListsData(stringJsonArray);
             }
         };
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        int id_user = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA, 0);
         FetchListsRequest fetchListsRequest = new FetchListsRequest(id_user, responseListener);
         RequestQueue queue = Volley.newRequestQueue(ListsActivity.this);
         queue.add(fetchListsRequest);
