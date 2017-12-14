@@ -25,4 +25,11 @@
     <string name="error_message_lists">
         An error has occurred.
     </string>
+
+    <!-- Strings related to creating new list in dialog-->
+    <string name="add_list_title">Nowa lista</string>
+    <string name="add_list_name_hint">Nazwa listy</string>
+    <string name="add_list_data_hint">Data zakupów</string>
+    <string name="add_list_positive_button">Dodaj liste</string>
+    <string name="add_list_negative_button">Anuluj</string>
 </resources>

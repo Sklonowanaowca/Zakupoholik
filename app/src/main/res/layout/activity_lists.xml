@@ -19,7 +19,9 @@
         android:layout_gravity="end"
         android:src="@mipmap/ic_add_white_24dp"
         app:backgroundTint="@color/colorPrimary"
-        app:elevation="11dp" />
+        app:elevation="11dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/add_list_fab" />
 
     <TextView
         android:layout_width="wrap_content"

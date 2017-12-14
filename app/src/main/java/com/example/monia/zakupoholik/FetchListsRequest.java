@@ -18,7 +18,7 @@ public class FetchListsRequest extends StringRequest{
         super(Method.POST, FETCH_LISTS_REQUEST_URL, listener, null);
         //create new params to send data to php file
         params = new HashMap<>();
-        params.put("idUzytkownika", String.valueOf(id_user))    ;
+        params.put("idUzytkownika", String.valueOf(id_user));
     }
 
     //po wykonaniu zapytania volley uruchomi tę metodę, ktora zwroci parametry (id_user)

@@ -1,9 +1,11 @@
 package com.example.monia.zakupoholik;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +26,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
     private ListsAdapter mListsAdapter;
+    public int id_user;
     Toast mToast;
 
     @Override
@@ -42,7 +45,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         mRecyclerView.setAdapter(mListsAdapter);
 
         Intent dataFromLoginActivity = getIntent();
-        int id_user = dataFromLoginActivity.getIntExtra("ID", 0);
+        id_user = dataFromLoginActivity.getIntExtra("ID", 0);
         String imie = dataFromLoginActivity.getStringExtra("IMIE");
 
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -52,6 +55,15 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         editor.apply();
 
         loadLists(id_user);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_list_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment dialogFragment = new AddListDialog();
+                dialogFragment.show(getFragmentManager(),"add_lists");
+            }
+        });
     }
 
     private void loadLists(Integer id_user){
@@ -84,6 +96,29 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
             e.printStackTrace();
         }
         return stringJsonArray;
+    }
+
+    public void addList(String nazwaListy, String dataZakupow, Context context){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response) {// response from pokaz_listy.php (json array)
+                try{
+                    JSONObject jsonObj = new JSONObject(response);
+                    boolean success = jsonObj.getBoolean("success");
+                    String message="";
+                    if(success) {
+                        message = jsonObj.getString("message");
+                    } else {
+                        message = jsonObj.getString("message");
+                    }
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        AddListsRequest fetchListsRequest = new AddListsRequest(nazwaListy, dataZakupow, id_user, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(fetchListsRequest);
     }
 
     @Override

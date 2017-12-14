@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -116,8 +117,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
         };
+        Context mContext = getApplicationContext();
         LoginRequest loginRequest = new LoginRequest(login, password, responseListener);
-        RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(loginRequest);
     }
 
