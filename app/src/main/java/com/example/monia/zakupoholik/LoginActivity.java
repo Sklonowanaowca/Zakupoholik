@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     public final static String KEY_IMIE = "KEY_IMIE";
     public final static String KEY_ID_UZYTKOWNIKA = "KEY_ID_UZYTKOWNIKA";
+    public static final String MyPREFERENCES = "MyPrefs" ;
 
     private ProgressBar mProgressBar;
     private EditText mLoginEditText;

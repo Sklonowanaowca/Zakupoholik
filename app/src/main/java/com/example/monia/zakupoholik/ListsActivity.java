@@ -2,7 +2,9 @@ package com.example.monia.zakupoholik;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
@@ -10,7 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +31,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
     private ListsAdapter mListsAdapter;
-    public int id_user;
+    public static int idUserPublic;
     Toast mToast;
 
     @Override
@@ -45,14 +50,16 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         mRecyclerView.setAdapter(mListsAdapter);
 
         Intent dataFromLoginActivity = getIntent();
-        id_user = dataFromLoginActivity.getIntExtra("ID", 0);
+        int id_user = dataFromLoginActivity.getIntExtra("ID", 0);
         String imie = dataFromLoginActivity.getStringExtra("IMIE");
 
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(LoginActivity.KEY_IMIE, imie);
         editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, id_user);
         editor.apply();
+
+        idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
 
         loadLists(id_user);
 
@@ -60,13 +67,41 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment dialogFragment = new AddListDialog();
-                dialogFragment.show(getFragmentManager(),"add_lists");
+                showAlertDialog();
             }
         });
     }
 
-    private void loadLists(Integer id_user){
+    public void showAlertDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_list, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText nazwa = (EditText) dialogView.findViewById(R.id.add_list_name);
+        final EditText data = (EditText) dialogView.findViewById(R.id.add_list_data);
+
+        dialogBuilder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String nazwaListy = nazwa.getText().toString().trim();
+                String dataZakupow = data.getText().toString().trim();
+               // if (!nazwaListy.isEmpty() && !dataZakupow.isEmpty()) {
+                    addList(nazwaListy, dataZakupow, getApplicationContext());
+                    loadLists(idUserPublic);
+                //}
+            }
+        });
+        dialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    public void loadLists(Integer id_user){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
@@ -98,7 +133,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         return stringJsonArray;
     }
 
-    public void addList(String nazwaListy, String dataZakupow, Context context){
+    public void addList(String nazwaListy, String dataZakupow, final Context context){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
@@ -108,15 +143,17 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
                     String message="";
                     if(success) {
                         message = jsonObj.getString("message");
+                        Toast.makeText(context, "Dodano liste", Toast.LENGTH_SHORT).show();
                     } else {
                         message = jsonObj.getString("message");
+                        Toast.makeText(context, "Nie udało sie dodac listy", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
             }
         };
-        AddListsRequest fetchListsRequest = new AddListsRequest(nazwaListy, dataZakupow, id_user, responseListener);
+        AddListsRequest fetchListsRequest = new AddListsRequest(nazwaListy, dataZakupow, idUserPublic, responseListener);
         RequestQueue queue = Volley.newRequestQueue(context);
         queue.add(fetchListsRequest);
     }
