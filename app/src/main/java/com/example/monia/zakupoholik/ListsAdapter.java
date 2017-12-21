@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapterViewHolder> {
     private String[] mListsData;
+    private ArrayList<ListData> listDatas = new ArrayList<>();
     interface ListsAdapterOnClickHandler{
         void click(String list);
     }
@@ -25,20 +27,28 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
     }
 
     public class ListsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public final TextView mListsTextView;
+        public final TextView mListsNameTextView;
+        public final TextView mListsDateTextView;
 
         public ListsAdapterViewHolder(View itemView) {
             super(itemView);
-            mListsTextView = (TextView) itemView.findViewById(R.id.tv_lists_data);
+            mListsNameTextView = (TextView) itemView.findViewById(R.id.tv_lists_name);
+            mListsDateTextView = (TextView) itemView.findViewById(R.id.tv_lists_date);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            int clickedList = getAdapterPosition();
-            String list = mListsData[clickedList];
-            mClickHandler.click(list);
+            int clickedListPos = getAdapterPosition();
+            ListData cilkedList = listDatas.get(clickedListPos);
+            String lista = cilkedList.getNazwaListy();
+            mClickHandler.click(lista);
         }
+    }
+
+    public void setListDatas(ArrayList<ListData> listDatas){
+        this.listDatas = listDatas;
+        notifyItemRangeChanged(0, listDatas.size());
     }
 
     @Override
@@ -46,27 +56,20 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
         Context context = parent.getContext();
         int layoutIdForListItem = R.layout.activity_lists_item;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutIdForListItem, parent, false);
         return new ListsAdapterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ListsAdapterViewHolder holder, int position) {
-        String list = mListsData[position];
-        holder.mListsTextView.setText(list);
+        ListData current = listDatas.get(position);
+        holder.mListsNameTextView.setText(current.getNazwaListy());
+        holder.mListsDateTextView.setText(current.getDataZakupow());
     }
 
     @Override
     public int getItemCount() {
-        if(mListsData == null)
-            return 0;
-        return mListsData.length;
-    }
-
-    public void setListsData(String[] listsdata){
-        mListsData = listsdata;
-        notifyDataSetChanged();
+        return listDatas.size();
     }
 }

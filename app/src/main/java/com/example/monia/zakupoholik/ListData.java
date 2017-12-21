@@ -9,4 +9,16 @@ public class ListData {
     public String nazwaListy;
     public String dataZakupow;
     public double kosztZakupow;
+
+    public ListData(){
+
+    }
+
+    public  String getNazwaListy(){
+        return nazwaListy;
+    }
+
+    public String getDataZakupow(){
+        return dataZakupow;
+    }
 }

@@ -12,9 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,11 +29,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.zip.Inflater;
+
 public class ListsActivity extends AppCompatActivity implements ListsAdapter.ListsAdapterOnClickHandler{
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
     private ListsAdapter mListsAdapter;
     public static int idUserPublic;
+    ArrayList<ListData> listDatas = new ArrayList<>();
     Toast mToast;
 
     @Override
@@ -40,14 +46,6 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         setContentView(R.layout.activity_lists);
 
         mErrorMessage = (TextView) findViewById(R.id.error_message);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
-
-        mListsAdapter = new ListsAdapter(this);
-        mRecyclerView.setAdapter(mListsAdapter);
 
         Intent dataFromLoginActivity = getIntent();
         int id_user = dataFromLoginActivity.getIntExtra("ID", 0);
@@ -60,6 +58,15 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         editor.apply();
 
         idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
+
+        mListsAdapter = new ListsAdapter(this);
+        mRecyclerView.setAdapter(mListsAdapter);
 
         loadLists(id_user);
 
@@ -85,10 +92,10 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
             public void onClick(DialogInterface dialog, int whichButton) {
                 String nazwaListy = nazwa.getText().toString().trim();
                 String dataZakupow = data.getText().toString().trim();
-               // if (!nazwaListy.isEmpty() && !dataZakupow.isEmpty()) {
+                if (!nazwaListy.isEmpty() && !dataZakupow.isEmpty()) {
                     addList(nazwaListy, dataZakupow, getApplicationContext());
-                    loadLists(idUserPublic);
-                //}
+                }
+                loadLists(idUserPublic);
             }
         });
         dialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -106,9 +113,8 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
 
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
-                String[] stringJsonArray = getDataToJsonArray(response);
-
-                mListsAdapter.setListsData(stringJsonArray);
+                listDatas = parseJSONresponse(response);
+                mListsAdapter.setListDatas(listDatas);
             }
         };
         FetchListsRequest fetchListsRequest = new FetchListsRequest(id_user, responseListener);
@@ -116,21 +122,24 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         queue.add(fetchListsRequest);
     }
 
-    private String[] getDataToJsonArray(String response){
-        String[] stringJsonArray = null;
-        try {
-            JSONObject jsonObject = new JSONObject(response);
-            JSONArray listy = jsonObject.getJSONArray("lists");
-            stringJsonArray = new String[listy.length()];
+    private ArrayList<ListData> parseJSONresponse(String response){
+        ArrayList<ListData> listDatas = new ArrayList<>();
+        if(response!=null && response.length()>0){
+            try{
+                JSONObject jsonObject = new JSONObject(response);
+                JSONArray listy = jsonObject.getJSONArray("lists");
                 for(int i=0; i<listy.length(); i++){
+                    ListData currentData = new ListData();
                     JSONObject json_data = listy.getJSONObject(i);
-                    String nazwaListy = json_data.getString("Nazwa_listy");
-                    stringJsonArray[i] = nazwaListy;
+                    currentData.nazwaListy = json_data.getString("Nazwa_listy");
+                    currentData.dataZakupow = json_data.getString("Data_zakupow");
+                    listDatas.add(currentData);
                 }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
         }
-        return stringJsonArray;
+        return listDatas;
     }
 
     public void addList(String nazwaListy, String dataZakupow, final Context context){
@@ -158,6 +167,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         queue.add(fetchListsRequest);
     }
 
+
     @Override
     public void click(String list) {
         if(mToast  != null)
@@ -174,5 +184,17 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
     private void showErrorMessage(){
         mErrorMessage.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onRestart() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
+
+        mListsAdapter = new ListsAdapter(this);
+        mRecyclerView.setAdapter(mListsAdapter);
     }
 }
