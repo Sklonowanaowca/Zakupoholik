@@ -7,8 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.monia.zakupoholik.data.ListData;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Monia on 2017-12-11.

@@ -1,8 +1,6 @@
 package com.example.monia.zakupoholik;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,11 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,19 +19,19 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.monia.zakupoholik.data.ListData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class ListsActivity extends AppCompatActivity implements ListsAdapter.ListsAdapterOnClickHandler{
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
     private ListsAdapter mListsAdapter;
-    public static int idUserPublic;
+    private static int idUserPublic;
     ArrayList<ListData> listDatas = new ArrayList<>();
     Toast mToast;
 
@@ -48,16 +43,16 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         mErrorMessage = (TextView) findViewById(R.id.error_message);
 
         Intent dataFromLoginActivity = getIntent();
-        int id_user = dataFromLoginActivity.getIntExtra("ID", 0);
+        idUserPublic = dataFromLoginActivity.getIntExtra("ID", 0);
         String imie = dataFromLoginActivity.getStringExtra("IMIE");
 
         SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(LoginActivity.KEY_IMIE, imie);
-        editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, id_user);
+        editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUserPublic);
         editor.apply();
 
-        idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
+        //idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
         LinearLayoutManager layoutManager =
@@ -68,7 +63,8 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         mListsAdapter = new ListsAdapter(this);
         mRecyclerView.setAdapter(mListsAdapter);
 
-        loadLists(id_user);
+        Toast.makeText(this, "" + idUserPublic, Toast.LENGTH_SHORT).show();
+        loadLists(idUserPublic);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_list_fab);
         fab.setOnClickListener(new View.OnClickListener() {
