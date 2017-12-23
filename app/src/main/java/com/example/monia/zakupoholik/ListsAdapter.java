@@ -21,18 +21,13 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
     private ArrayList<ListData> listDatas = new ArrayList<>();
     private Cursor mCursor;
     private Context mContext;
-    interface ListsAdapterOnClickHandler{
-        void click(String list);
-    }
-    final private ListsAdapterOnClickHandler mClickHandler;
 
-    public ListsAdapter(ListsAdapterOnClickHandler listsAdapterOnClickHandler,Context context, Cursor cursor){
-        mClickHandler = listsAdapterOnClickHandler;
+    public ListsAdapter(Context context, Cursor cursor){
         this.mContext = context;
         this.mCursor = cursor;
     }
 
-    public class ListsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ListsAdapterViewHolder extends RecyclerView.ViewHolder{
         public final TextView mListsNameTextView;
         public final TextView mListsDateTextView;
 
@@ -40,21 +35,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
             super(itemView);
             mListsNameTextView = (TextView) itemView.findViewById(R.id.tv_lists_name);
             mListsDateTextView = (TextView) itemView.findViewById(R.id.tv_lists_date);
-            itemView.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View view) {
-            int clickedListPos = getAdapterPosition();
-            ListData cilkedList = listDatas.get(clickedListPos);
-            String lista = cilkedList.getNazwaListy();
-            mClickHandler.click(lista);
-        }
-    }
-
-    public void setListDatas(ArrayList<ListData> listDatas){
-        this.listDatas = listDatas;
-        notifyItemRangeChanged(0, listDatas.size());
     }
 
     @Override

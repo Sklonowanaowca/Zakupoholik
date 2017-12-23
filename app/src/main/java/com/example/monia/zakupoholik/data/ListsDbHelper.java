@@ -22,11 +22,11 @@ public class ListsDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String SQL_CREATE_LISTS_TABLE = "CREATE TABLE " + ListsContract.ListsEntry.NAZWA_TABELI + "("
                 + ListsContract.ListsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ListsContract.ListsEntry.ID_LISTA + " INTEGER NOT NULL, "
+                + ListsContract.ListsEntry.ID_LISTA + " LONG NOT NULL, "
                 + ListsContract.ListsEntry.NAZWA_LISTY + " TEXT NOT NULL, "
                 + ListsContract.ListsEntry.DATA_ZAKUPOW + " DATE NOT NULL, "
                 //+ ListsContract.ListsEntry.KOSZT_ZAKUPOW + " DOUBLE);";
-                + ListsContract.ListsEntry.ID_UZYTKOWNIKA + " INTEGER NOT NULL);";
+                + ListsContract.ListsEntry.ID_UZYTKOWNIKA + " LONG NOT NULL);";
         sqLiteDatabase.execSQL(SQL_CREATE_LISTS_TABLE);
     }
 
