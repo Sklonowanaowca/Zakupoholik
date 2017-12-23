@@ -1,6 +1,7 @@
 package com.example.monia.zakupoholik;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.monia.zakupoholik.data.ListData;
+import com.example.monia.zakupoholik.data.ListsContract;
 
 import java.util.ArrayList;
 
@@ -16,15 +18,18 @@ import java.util.ArrayList;
  */
 
 public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapterViewHolder> {
-    private String[] mListsData;
     private ArrayList<ListData> listDatas = new ArrayList<>();
+    private Cursor mCursor;
+    private Context mContext;
     interface ListsAdapterOnClickHandler{
         void click(String list);
     }
     final private ListsAdapterOnClickHandler mClickHandler;
 
-    public ListsAdapter(ListsAdapterOnClickHandler listsAdapterOnClickHandler){
+    public ListsAdapter(ListsAdapterOnClickHandler listsAdapterOnClickHandler,Context context, Cursor cursor){
         mClickHandler = listsAdapterOnClickHandler;
+        this.mContext = context;
+        this.mCursor = cursor;
     }
 
     public class ListsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -54,23 +59,47 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
 
     @Override
     public ListsAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        int layoutIdForListItem = R.layout.activity_lists_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
 
-        View view = inflater.inflate(layoutIdForListItem, parent, false);
+        View view = inflater.inflate(R.layout.activity_lists_item, parent, false);
         return new ListsAdapterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ListsAdapterViewHolder holder, int position) {
-        ListData current = listDatas.get(position);
-        holder.mListsNameTextView.setText(current.getNazwaListy());
-        holder.mListsDateTextView.setText(current.getDataZakupow());
+//        ListData current = listDatas.get(position);
+//        holder.mListsNameTextView.setText(current.getNazwaListy());
+//        holder.mListsDateTextView.setText(current.getDataZakupow());
+
+        if (!mCursor.moveToPosition(position))
+            return; // bail if returned null
+
+        // Update the view holder with the information needed to display
+        String nazwaListy = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.NAZWA_LISTY));
+        String dataZakupow = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.DATA_ZAKUPOW));
+        // (6) Retrieve the id from the cursor and
+        long id = mCursor.getLong(mCursor.getColumnIndex(ListsContract.ListsEntry._ID));
+        // Display the guest name
+        holder.mListsNameTextView.setText(nazwaListy);
+        // Display the party count
+        holder.mListsDateTextView.setText(String.valueOf(dataZakupow));
+        // (7) Set the tag of the itemview in the holder to the id
+        holder.itemView.setTag(id);
     }
 
     @Override
     public int getItemCount() {
-        return listDatas.size();
+        //return listDatas.size();
+        return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor newCursor) {
+        // Always close the previous mCursor first
+        if (mCursor != null) mCursor.close();
+        mCursor = newCursor;
+        if (newCursor != null) {
+            // Force the RecyclerView to refresh
+            this.notifyDataSetChanged();
+        }
     }
 }

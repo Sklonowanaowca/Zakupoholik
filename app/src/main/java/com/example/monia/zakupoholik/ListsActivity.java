@@ -1,15 +1,19 @@
 package com.example.monia.zakupoholik;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +24,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
+import com.example.monia.zakupoholik.data.ListsContract;
+import com.example.monia.zakupoholik.data.ListsDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +38,7 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
     private TextView mErrorMessage;
     private ListsAdapter mListsAdapter;
     private static int idUserPublic;
+    private SQLiteDatabase mDb;
     ArrayList<ListData> listDatas = new ArrayList<>();
     Toast mToast;
 
@@ -54,17 +61,10 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
 
         //idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
+        ListsDbHelper listsDbHelper = new ListsDbHelper(this);
+        mDb = listsDbHelper.getWritableDatabase();
 
-        mListsAdapter = new ListsAdapter(this);
-        mRecyclerView.setAdapter(mListsAdapter);
-
-        Toast.makeText(this, "" + idUserPublic, Toast.LENGTH_SHORT).show();
-        loadLists(idUserPublic);
+        loadListsFromSerwerToSQLite(idUserPublic);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_list_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +73,18 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
                 showAlertDialog();
             }
         });
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                //remove list
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
     public void showAlertDialog(){
@@ -91,7 +103,6 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
                 if (!nazwaListy.isEmpty() && !dataZakupow.isEmpty()) {
                     addList(nazwaListy, dataZakupow, getApplicationContext());
                 }
-                loadLists(idUserPublic);
             }
         });
         dialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -104,13 +115,31 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         b.show();
     }
 
-    public void loadLists(Integer id_user){
+    public void loadListsFromSerwerToSQLite(Integer id_user){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
-                listDatas = parseJSONresponse(response);
-                mListsAdapter.setListDatas(listDatas);
+                if(response!=null && response.length()>0){
+                    removeAllListFromSQLite();
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray listy = jsonObject.getJSONArray("lists");
+                        for(int i=0; i<listy.length(); i++){
+                            ListData currentData = new ListData();
+                            JSONObject json_data = listy.getJSONObject(i);
+                            currentData.idLista = json_data.getInt("ID_Lista");
+                            currentData.nazwaListy = json_data.getString("Nazwa_listy");
+                            currentData.dataZakupow = json_data.getString("Data_zakupow");
+                            currentData.idUzytkownika = json_data.getInt("ID_Uzytkownika");
+                            addListToSQLite(json_data.getInt("ID_Lista"), json_data.getString("Nazwa_listy"),
+                                    json_data.getString("Data_zakupow"), json_data.getInt("ID_Uzytkownika"));
+                        }
+                        loadListsFromSqlite();
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
             }
         };
         FetchListsRequest fetchListsRequest = new FetchListsRequest(id_user, responseListener);
@@ -118,24 +147,14 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         queue.add(fetchListsRequest);
     }
 
-    private ArrayList<ListData> parseJSONresponse(String response){
-        ArrayList<ListData> listDatas = new ArrayList<>();
-        if(response!=null && response.length()>0){
-            try{
-                JSONObject jsonObject = new JSONObject(response);
-                JSONArray listy = jsonObject.getJSONArray("lists");
-                for(int i=0; i<listy.length(); i++){
-                    ListData currentData = new ListData();
-                    JSONObject json_data = listy.getJSONObject(i);
-                    currentData.nazwaListy = json_data.getString("Nazwa_listy");
-                    currentData.dataZakupow = json_data.getString("Data_zakupow");
-                    listDatas.add(currentData);
-                }
-            } catch (JSONException e){
-                e.printStackTrace();
-            }
-        }
-        return listDatas;
+    private void loadListsFromSqlite(){
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
+        mListsAdapter = new ListsAdapter(this,this,getListsFromSQLite());
+        mRecyclerView.setAdapter(mListsAdapter);
     }
 
     public void addList(String nazwaListy, String dataZakupow, final Context context){
@@ -148,6 +167,8 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
                     String message="";
                     if(success) {
                         message = jsonObj.getString("message");
+                        loadListsFromSerwerToSQLite(idUserPublic);
+                        loadListsFromSqlite();
                         Toast.makeText(context, "Dodano liste", Toast.LENGTH_SHORT).show();
                     } else {
                         message = jsonObj.getString("message");
@@ -163,6 +184,32 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
         queue.add(fetchListsRequest);
     }
 
+    private long addListToSQLite(int idLista, String nazwaListy, String dataZakupow, int idUzytkownika) {
+        ContentValues cv = new ContentValues();
+        cv.put(ListsContract.ListsEntry.ID_LISTA, idLista);
+        cv.put(ListsContract.ListsEntry.NAZWA_LISTY, nazwaListy);
+        cv.put(ListsContract.ListsEntry.DATA_ZAKUPOW, dataZakupow);
+        cv.put(ListsContract.ListsEntry.ID_UZYTKOWNIKA, idUzytkownika);
+        return mDb.insert(ListsContract.ListsEntry.NAZWA_TABELI, null, cv);
+    }
+
+    private boolean removeAllListFromSQLite(){
+        return mDb.delete(ListsContract.ListsEntry.NAZWA_TABELI,null, null) > 0;
+    }
+
+    private Cursor getListsFromSQLite() {
+        String[] cols = {ListsContract.ListsEntry.NAZWA_LISTY, ListsContract.ListsEntry.DATA_ZAKUPOW};
+        String selection = ListsContract.ListsEntry.ID_UZYTKOWNIKA + "=" + idUserPublic;
+        return mDb.query(
+                ListsContract.ListsEntry.NAZWA_TABELI,
+                null,
+                null,
+                null,
+                null,
+                null,
+                ListsContract.ListsEntry.NAZWA_LISTY
+        );
+    }
 
     @Override
     public void click(String list) {
@@ -184,13 +231,6 @@ public class ListsActivity extends AppCompatActivity implements ListsAdapter.Lis
 
     @Override
     protected void onRestart() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);//zawartosc nie zmeni rozmiaru widoku
-
-        mListsAdapter = new ListsAdapter(this);
-        mRecyclerView.setAdapter(mListsAdapter);
+       loadListsFromSqlite();
     }
 }
