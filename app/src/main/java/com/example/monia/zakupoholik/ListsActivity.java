@@ -260,6 +260,8 @@ public class ListsActivity extends AppCompatActivity{
         return mDb.delete(ListsContract.ListsEntry.NAZWA_TABELI, ListsContract.ListsEntry._ID + "=" + id, null) > 0;
     }
 
+
+
     private void showLists(){
         mErrorMessage.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
