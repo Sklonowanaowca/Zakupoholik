@@ -1,21 +1,26 @@
 package com.example.monia.zakupoholik;
 
-import android.app.AlertDialog;
-import android.content.ClipData;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
 import com.example.monia.zakupoholik.data.ListsContract;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -77,7 +82,44 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(mContext, "position " + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "position " + position, Toast.LENGTH_SHORT).show();
+                final Dialog dialog = new Dialog(mContext);
+                dialog.setContentView(R.layout.dialog_rename_redata_list);
+                dialog.setTitle(R.string.rename_list_title);
+
+                final EditText rename = (EditText) dialog.findViewById(R.id.rename_list);
+                final EditText redate = (EditText) dialog.findViewById(R.id.redate_list);
+                mCursor.moveToPosition(position);
+                String nazwalisty = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.NAZWA_LISTY));
+                String datazakupow = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.DATA_ZAKUPOW));
+                final long idlisty = mCursor.getInt(mCursor.getColumnIndex(ListsContract.ListsEntry.ID_LISTA));
+                final long idUzytkownika = mCursor.getInt(mCursor.getColumnIndex(ListsContract.ListsEntry.ID_UZYTKOWNIKA));
+                rename.setText(nazwalisty);
+                redate.setText(datazakupow);
+
+                final
+
+                Button dialogOkButton = (Button) dialog.findViewById(R.id.ok_button);
+                Button dialogCancelButton = (Button) dialog.findViewById(R.id.cancel_button);
+
+                dialogOkButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String renazwaListy = rename.getText().toString();
+                        String redataZakupow = redate.getText().toString();
+                        renameRedateList(idlisty,renazwaListy,redataZakupow,idUzytkownika);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialogCancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
                 return true;
             }
         });
@@ -97,5 +139,29 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
             // Force the RecyclerView to refresh
             this.notifyDataSetChanged();
         }
+    }
+
+    private void renameRedateList(long id_list, String nazwaListy, String dataZakupow, long idUzytkownika){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+
+            @Override
+            public void onResponse(String response) {// response from zmien_nazwe_listy.php (json array)
+                if(response!=null && response.length()>0){
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        if(success)
+                            Toast.makeText(mContext, "Zmieniono nazwe listy", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(mContext, "Ooops! Coś poszło nie tak...", Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        RenameRedateListRequest fetchListsRequest = new RenameRedateListRequest(id_list, nazwaListy, dataZakupow, idUzytkownika, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(mContext);
+        queue.add(fetchListsRequest);
     }
 }

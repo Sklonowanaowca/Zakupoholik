@@ -32,4 +32,9 @@
     <string name="add_list_data_hint">Data zakupów</string>
     <string name="add_list_positive_button">Dodaj liste</string>
     <string name="add_list_negative_button">Anuluj</string>
+
+    <!-- Strings related to renaming list in dialog-->
+    <string name="rename_list_title">Zmień nazwę listy</string>
+    <string name="rename_list_ok_button">Zmień nazwę</string>
+    <string name="rename_list_cancel_button">Anuluj</string>
 </resources>
