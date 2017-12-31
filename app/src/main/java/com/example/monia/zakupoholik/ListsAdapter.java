@@ -141,7 +141,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
         }
     }
 
-    private void renameRedateList(long id_list, String nazwaListy, String dataZakupow, long idUzytkownika){
+    private void renameRedateList(long id_list, String nazwaListy, String dataZakupow,final long idUzytkownika){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
@@ -154,6 +154,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
                             Toast.makeText(mContext, "Zmieniono nazwe listy", Toast.LENGTH_SHORT).show();
                         else
                             Toast.makeText(mContext, "Ooops! Coś poszło nie tak...", Toast.LENGTH_SHORT).show();
+                        ((ListsActivity)mContext).loadListsFromSerwerToSQLite((int)idUzytkownika);
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
