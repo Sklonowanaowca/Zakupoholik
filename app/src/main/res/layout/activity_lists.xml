@@ -6,6 +6,14 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/no_lists_message"
+        android:text="@string/no_lists_message"
+        android:textSize="22sp"
+        android:visibility="gone"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_lists"
         android:layout_width="match_parent"
@@ -21,13 +29,7 @@
         app:backgroundTint="@color/colorPrimary"
         app:elevation="11dp"
         android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         android:id="@+id/add_list_fab" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/error_message"
-        android:text="@string/error_message_lists"
-        android:textSize="22sp"
-        android:visibility="invisible"/>
 </LinearLayout>

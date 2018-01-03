@@ -24,18 +24,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
-import com.example.monia.zakupoholik.data.ListsContract;
-import com.example.monia.zakupoholik.data.ListsDbHelper;
+import com.example.monia.zakupoholik.data.ListsProductContract;
+import com.example.monia.zakupoholik.data.ListsProductsDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class ListsActivity extends AppCompatActivity{
     private RecyclerView mRecyclerView;
-    private TextView mErrorMessage;
+    private TextView mNoListsMessage;
     private ListsAdapter mListsAdapter;
     private static int idUserPublic;
     private SQLiteDatabase mDb;
@@ -45,22 +43,27 @@ public class ListsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
-        mErrorMessage = (TextView) findViewById(R.id.error_message);
+        mNoListsMessage = (TextView) findViewById(R.id.no_lists_message);
 
+        String imie="";
         Intent dataFromLoginActivity = getIntent();
-        idUserPublic = dataFromLoginActivity.getIntExtra("ID", 0);
-        String imie = dataFromLoginActivity.getStringExtra("IMIE");
+        if(dataFromLoginActivity.hasExtra(LoginActivity.KEY_ID_UZYTKOWNIKA) && dataFromLoginActivity.hasExtra(LoginActivity.KEY_IMIE)){
+            idUserPublic = dataFromLoginActivity.getIntExtra(LoginActivity.KEY_ID_UZYTKOWNIKA, 0);
+            imie = dataFromLoginActivity.getStringExtra(LoginActivity.KEY_IMIE);
+        }
 
-        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(LoginActivity.KEY_IMIE, imie);
-        editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUserPublic);
-        editor.apply();
+        if(idUserPublic!=0 && !imie.equals("")) {
+            SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(LoginActivity.KEY_IMIE, imie);
+            editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, idUserPublic);
+            editor.apply();
+        }
 
         //idUserPublic = sharedPreferences.getInt(LoginActivity.KEY_ID_UZYTKOWNIKA,0);
 
-        ListsDbHelper listsDbHelper = new ListsDbHelper(this);
-        mDb = listsDbHelper.getWritableDatabase();
+        ListsProductsDbHelper listsProductsDbHelper = new ListsProductsDbHelper(this);
+        mDb = listsProductsDbHelper.getWritableDatabase();
 
         loadListsFromSerwerToSQLite(idUserPublic);
 
@@ -97,14 +100,14 @@ public class ListsActivity extends AppCompatActivity{
     }
 
     private long getListIdFromSerwer(long idSQlite){
-        String selectQuery = "select " + ListsContract.ListsEntry.ID_LISTA + " from " + ListsContract.ListsEntry.NAZWA_TABELI
-                + " where " + ListsContract.ListsEntry._ID + " = " + idSQlite;
+        String selectQuery = "select " + ListsProductContract.ListsEntry.ID_LISTA + " from " + ListsProductContract.ListsEntry.NAZWA_TABELI
+                + " where " + ListsProductContract.ListsEntry._ID + " = " + idSQlite;
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         long idSerwer;
 
         cursor.moveToFirst();
         if(cursor.getCount() > 0){
-            idSerwer = cursor.getInt(cursor.getColumnIndex(ListsContract.ListsEntry.ID_LISTA));
+            idSerwer = cursor.getInt(cursor.getColumnIndex(ListsProductContract.ListsEntry.ID_LISTA));
         } else idSerwer=-1;
         cursor.close();
         return idSerwer;
@@ -148,16 +151,16 @@ public class ListsActivity extends AppCompatActivity{
                     try{
                         JSONObject jsonObject = new JSONObject(response);
                         JSONArray listy = jsonObject.getJSONArray("lists");
-                        for(int i=0; i<listy.length(); i++){
-                            ListData currentData = new ListData();
-                            JSONObject json_data = listy.getJSONObject(i);
-                            currentData.idLista = json_data.getInt("ID_Lista");
-                            currentData.nazwaListy = json_data.getString("Nazwa_listy");
-                            currentData.dataZakupow = json_data.getString("Data_zakupow");
-                            currentData.idUzytkownika = json_data.getInt("ID_Uzytkownika");
-                            addListToSQLite(json_data.getInt("ID_Lista"), json_data.getString("Nazwa_listy"),
-                                    json_data.getString("Data_zakupow"), json_data.getInt("ID_Uzytkownika"));
-                        }
+                            for (int i = 0; i < listy.length(); i++) {
+                                ListData currentData = new ListData();
+                                JSONObject json_data = listy.getJSONObject(i);
+                                currentData.idLista = json_data.getInt("ID_Lista");
+                                currentData.nazwaListy = json_data.getString("Nazwa_listy");
+                                currentData.dataZakupow = json_data.getString("Data_zakupow");
+                                currentData.idUzytkownika = json_data.getInt("ID_Uzytkownika");
+                                addListToSQLite(json_data.getInt("ID_Lista"), json_data.getString("Nazwa_listy"),
+                                        json_data.getString("Data_zakupow"), json_data.getInt("ID_Uzytkownika"));
+                            }
                         loadListsFromSqlite();
                     } catch (JSONException e){
                         e.printStackTrace();
@@ -191,11 +194,10 @@ public class ListsActivity extends AppCompatActivity{
                     if(success) {
                         message = jsonObj.getString("message");
                         loadListsFromSerwerToSQLite(idUserPublic);
-                        loadListsFromSqlite();
-                        Toast.makeText(context, "Dodano liste", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
                         message = jsonObj.getString("message");
-                        Toast.makeText(context, "Nie udało sie dodac listy", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e){
                     e.printStackTrace();
@@ -209,11 +211,11 @@ public class ListsActivity extends AppCompatActivity{
 
     private long addListToSQLite(int idLista, String nazwaListy, String dataZakupow, int idUzytkownika) {
         ContentValues cv = new ContentValues();
-        cv.put(ListsContract.ListsEntry.ID_LISTA, idLista);
-        cv.put(ListsContract.ListsEntry.NAZWA_LISTY, nazwaListy);
-        cv.put(ListsContract.ListsEntry.DATA_ZAKUPOW, dataZakupow);
-        cv.put(ListsContract.ListsEntry.ID_UZYTKOWNIKA, idUzytkownika);
-        return mDb.insert(ListsContract.ListsEntry.NAZWA_TABELI, null, cv);
+        cv.put(ListsProductContract.ListsEntry.ID_LISTA, idLista);
+        cv.put(ListsProductContract.ListsEntry.NAZWA_LISTY, nazwaListy);
+        cv.put(ListsProductContract.ListsEntry.DATA_ZAKUPOW, dataZakupow);
+        cv.put(ListsProductContract.ListsEntry.ID_UZYTKOWNIKA, idUzytkownika);
+        return mDb.insert(ListsProductContract.ListsEntry.NAZWA_TABELI, null, cv);
     }
 
     public void deleteListFromSerwer(long id_list){
@@ -241,12 +243,12 @@ public class ListsActivity extends AppCompatActivity{
     }
 
     private boolean removeAllListFromSQLite(){
-        return mDb.delete(ListsContract.ListsEntry.NAZWA_TABELI,null, null) > 0;
+        return mDb.delete(ListsProductContract.ListsEntry.NAZWA_TABELI,null, null) > 0;
     }
 
     private Cursor getListsFromSQLite() {
         return mDb.query(
-                ListsContract.ListsEntry.NAZWA_TABELI,
+                ListsProductContract.ListsEntry.NAZWA_TABELI,
                 null,
                 null,
                 null,
@@ -257,23 +259,22 @@ public class ListsActivity extends AppCompatActivity{
     }
 
     private boolean removeListFromSQLite(long id){
-        return mDb.delete(ListsContract.ListsEntry.NAZWA_TABELI, ListsContract.ListsEntry._ID + "=" + id, null) > 0;
+        return mDb.delete(ListsProductContract.ListsEntry.NAZWA_TABELI, ListsProductContract.ListsEntry._ID + "=" + id, null) > 0;
     }
 
-
-
-    private void showLists(){
-        mErrorMessage.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    private void showErrorMessage(){
-        mErrorMessage.setVisibility(View.VISIBLE);
+    private void showNoListsMessage(){
+        mNoListsMessage.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
     }
 
     @Override
     protected void onRestart() {
-       loadListsFromSqlite();
+        super.onRestart();
+        loadListsFromSqlite();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }

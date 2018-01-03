@@ -22,8 +22,8 @@
     <string name="email">Email</string>
 
     <!-- Strings related to lists -->
-    <string name="error_message_lists">
-        An error has occurred.
+    <string name="no_lists_message">
+        Nie masz żadnych list
     </string>
 
     <!-- Strings related to creating new list in dialog-->
@@ -37,4 +37,9 @@
     <string name="rename_list_title">Zmień nazwę listy</string>
     <string name="rename_list_ok_button">Zmień nazwę</string>
     <string name="rename_list_cancel_button">Anuluj</string>
+
+    <!-- Strings related to products -->
+    <string name="no_products_message">
+        Nie masz żadnych produktow
+    </string>
 </resources>

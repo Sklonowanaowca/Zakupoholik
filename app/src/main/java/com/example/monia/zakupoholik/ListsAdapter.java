@@ -2,6 +2,7 @@ package com.example.monia.zakupoholik;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,9 +17,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
-import com.example.monia.zakupoholik.data.ListsContract;
+import com.example.monia.zakupoholik.data.ListsProductContract;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,10 +69,10 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
             return; // bail if returned null
 
         // Update the view holder with the information needed to display
-        String nazwaListy = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.NAZWA_LISTY));
-        String dataZakupow = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.DATA_ZAKUPOW));
+        String nazwaListy = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.NAZWA_LISTY));
+        String dataZakupow = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.DATA_ZAKUPOW));
         // (6) Retrieve the id from the cursor and
-        long id = mCursor.getLong(mCursor.getColumnIndex(ListsContract.ListsEntry._ID));
+        long id = mCursor.getLong(mCursor.getColumnIndex(ListsProductContract.ListsEntry._ID));
         // Display the guest name
         holder.mListsNameTextView.setText(nazwaListy);
         // Display the party count
@@ -90,10 +90,10 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
                 final EditText rename = (EditText) dialog.findViewById(R.id.rename_list);
                 final EditText redate = (EditText) dialog.findViewById(R.id.redate_list);
                 mCursor.moveToPosition(position);
-                String nazwalisty = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.NAZWA_LISTY));
-                String datazakupow = mCursor.getString(mCursor.getColumnIndex(ListsContract.ListsEntry.DATA_ZAKUPOW));
-                final long idlisty = mCursor.getInt(mCursor.getColumnIndex(ListsContract.ListsEntry.ID_LISTA));
-                final long idUzytkownika = mCursor.getInt(mCursor.getColumnIndex(ListsContract.ListsEntry.ID_UZYTKOWNIKA));
+                String nazwalisty = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.NAZWA_LISTY));
+                String datazakupow = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.DATA_ZAKUPOW));
+                final long idlisty = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.ID_LISTA));
+                final long idUzytkownika = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.ID_UZYTKOWNIKA));
                 rename.setText(nazwalisty);
                 redate.setText(datazakupow);
 
@@ -121,6 +121,20 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
 
                 dialog.show();
                 return true;
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCursor.moveToPosition(position);
+                String nazwaListy = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.NAZWA_LISTY));
+                int idList = (int)mCursor.getLong(mCursor.getColumnIndex(ListsProductContract.ListsEntry.ID_LISTA));
+                if(mContext instanceof ListsActivity) {
+                    Intent startProductActivity = new Intent(mContext, ProductsActivity.class);
+                    startProductActivity.putExtra("NAZWA_LISTY", nazwaListy);
+                    startProductActivity.putExtra("ID", idList);
+                    mContext.startActivity(startProductActivity);
+                }
             }
         });
     }

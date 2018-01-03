@@ -103,8 +103,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         String imie = jsonObject.getString("imie");
                         int idUzytkownika = jsonObject.getInt("id_uzytkownika");
                         Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
-                        listy.putExtra("ID", idUzytkownika);
-                        listy.putExtra("IMIE", imie);
+                        listy.putExtra(KEY_ID_UZYTKOWNIKA, idUzytkownika);
+                        listy.putExtra(KEY_IMIE, imie);
                         LoginActivity.this.startActivity(listy);
                     } else{
                         String message = jsonObject.getString("message");
