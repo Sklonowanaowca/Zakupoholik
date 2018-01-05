@@ -60,7 +60,7 @@ public class ProductsActivity extends AppCompatActivity {
             }
         });
 
-        loadProductsFromSQLite();
+        //loadProductsFromSQLite();
     }
 
     private void loadProductsFromSerwerToSQLite(final int idList){
@@ -78,12 +78,10 @@ public class ProductsActivity extends AppCompatActivity {
                             currentData.idProdukt = json_data.getInt("ID_Produkt");
                             currentData.ilosc = json_data.getInt("Ilosc");
                             currentData.cena = json_data.getDouble("Cena");
-                            currentData.idLista = json_data.getInt("ID_Lista");
+                            currentData.idLista = json_data.getLong("ID_Lista");
                             currentData.nazwa = json_data.getString("Nazwa");
-//                            addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.cena,
-//                                    currentData.getIdLista(), currentData.getNazwa());
-                            addProductToSQLite(json_data.getInt("ID_Produkt"), json_data.getInt("Ilosc"), json_data.getDouble("Cena"),
-                                    json_data.getInt("ID_Lista"), json_data.getString("Nazwa"));
+                            addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.cena,
+                                    currentData.getIdLista(), currentData.getNazwa());
                         }
                         loadProductsFromSQLite();
                     } catch (JSONException e){
@@ -122,8 +120,7 @@ public class ProductsActivity extends AppCompatActivity {
         return mDb.delete(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI,null, null) > 0;
     }
 
-    private long addProductToSQLite(int idProduct, int ilosc, double cena, int idLista, String nazwa) {
-        Toast.makeText(ProductsActivity.this, nazwa, Toast.LENGTH_SHORT).show();
+    private long addProductToSQLite(int idProduct, int ilosc, double cena, long idLista, String nazwa) {
         ContentValues cv = new ContentValues();
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT, idProduct);
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ILOSC, ilosc);

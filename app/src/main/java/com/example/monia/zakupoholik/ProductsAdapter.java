@@ -59,9 +59,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
 
     @Override
     public void onBindViewHolder(ProductsAdapter.ProductsAdapterViewHolder holder, final int position) {
-        if (!mCursor.moveToPosition(position))
+        if (!mCursor.moveToPosition(position)) {
+            Toast.makeText(mContext, "mCursor null", Toast.LENGTH_SHORT).show();
             return; // bail if returned null
-
+        }
         // Update the view holder with the information needed to display
         String nazwaProduktu = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_NAZWA));
         int ilosc = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ILOSC));
@@ -76,13 +77,6 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
                 mCursor.moveToPosition(position);
                 String nazwaProduktu = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_NAZWA));
                 Toast.makeText(mContext, nazwaProduktu, Toast.LENGTH_SHORT).show();
-//                int idList = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.ID_LISTA));
-//                if(mContext instanceof ListsActivity) {
-//                    Intent startProductActivity = new Intent(mContext, ProductsActivity.class);
-//                    startProductActivity.putExtra("NAZWA_LISTY", nazwaListy);
-//                    startProductActivity.putExtra("ID_LIST", idList);
-//                    mContext.startActivity(startProductActivity);
-//                }
             }
         });
     }

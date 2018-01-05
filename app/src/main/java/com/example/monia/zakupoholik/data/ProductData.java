@@ -9,7 +9,7 @@ public class ProductData {
     public String nazwa;
     public int ilosc;
     public double cena;
-    public int idLista;
+    public long idLista;
     public int idSklep;
 
     public ProductData(){}
@@ -22,7 +22,7 @@ public class ProductData {
 
     public double getCena(){return cena;}
 
-    public int getIdLista(){return idLista;}
+    public long getIdLista(){return idLista;}
 
     public int getIdSklep(){return idSklep;}
 }

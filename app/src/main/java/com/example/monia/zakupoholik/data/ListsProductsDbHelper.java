@@ -30,7 +30,7 @@ public class ListsProductsDbHelper extends SQLiteOpenHelper {
                 + ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT + " LONG NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_ILOSC + " INTEGER NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_CENA + " DOUBLE, "
-                + ListsProductContract.ListsEntry.PRODUKT_ID_LISTA + " INTEGER NOT NULL, "
+                + ListsProductContract.ListsEntry.PRODUKT_ID_LISTA + " LONG NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_NAZWA + " TEXT NOT NULL);";
                 //+ ListsProductContract.ListsEntry.PRODUKT_ID_SKLEP + " INTEGER);";
         sqLiteDatabase.execSQL(SQL_CREATE_LISTS_TABLE);
