@@ -204,9 +204,9 @@ public class ListsActivity extends AppCompatActivity{
                 }
             }
         };
-        AddListsRequest fetchListsRequest = new AddListsRequest(nazwaListy, dataZakupow, idUserPublic, responseListener);
+        AddListsRequest addListsRequest = new AddListsRequest(nazwaListy, dataZakupow, idUserPublic, responseListener);
         RequestQueue queue = Volley.newRequestQueue(context);
-        queue.add(fetchListsRequest);
+        queue.add(addListsRequest);
     }
 
     private long addListToSQLite(int idLista, String nazwaListy, String dataZakupow, int idUzytkownika) {

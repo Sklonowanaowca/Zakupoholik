@@ -42,4 +42,16 @@
     <string name="no_products_message">
         Nie masz żadnych produktow
     </string>
+
+    <!-- Strings related to adding new product in dialog-->
+    <string name="product_name_hint">Nazwa produktu</string>
+    <string name="product_number_hint">Ilość</string>
+    <string name="product_unit_default">szt</string>
+    <string-array name="units">
+        <item>szt</item>
+        <item>l</item>
+        <item>ml</item>
+        <item>kg</item>
+        <item>dag</item>
+    </string-array>
 </resources>

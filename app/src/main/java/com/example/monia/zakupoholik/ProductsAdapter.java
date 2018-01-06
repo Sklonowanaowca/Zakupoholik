@@ -41,11 +41,13 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
     public class ProductsAdapterViewHolder extends RecyclerView.ViewHolder{
         public final TextView mProductNameTextView;
         public final TextView mProductNumberTextView;
+        public final TextView mProductUnitTextView;
 
         public ProductsAdapterViewHolder(final View itemView) {
             super(itemView);
             mProductNameTextView = (TextView) itemView.findViewById(R.id.tv_products_name);
             mProductNumberTextView = (TextView) itemView.findViewById(R.id.tv_products_number);
+            mProductUnitTextView = (TextView) itemView.findViewById(R.id.tv_products_unit);
         }
     }
 
@@ -60,23 +62,21 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
     @Override
     public void onBindViewHolder(ProductsAdapter.ProductsAdapterViewHolder holder, final int position) {
         if (!mCursor.moveToPosition(position)) {
-            Toast.makeText(mContext, "mCursor null", Toast.LENGTH_SHORT).show();
             return; // bail if returned null
         }
         // Update the view holder with the information needed to display
         String nazwaProduktu = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_NAZWA));
-        int ilosc = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ILOSC));
+        float ilosc = mCursor.getFloat(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ILOSC));
+        String jednostka = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_JEDNOSTKA));
         long id = mCursor.getLong(mCursor.getColumnIndex(ListsProductContract.ListsEntry._ID));
         holder.mProductNameTextView.setText(nazwaProduktu);
         holder.mProductNumberTextView.setText(String.valueOf(ilosc));
+        holder.mProductUnitTextView.setText(jednostka);
         // (7) Set the tag of the itemview in the holder to the id
         holder.itemView.setTag(id);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCursor.moveToPosition(position);
-                String nazwaProduktu = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_NAZWA));
-                Toast.makeText(mContext, nazwaProduktu, Toast.LENGTH_SHORT).show();
             }
         });
     }

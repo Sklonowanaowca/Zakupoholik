@@ -7,7 +7,8 @@ package com.example.monia.zakupoholik.data;
 public class ProductData {
     public int idProdukt;
     public String nazwa;
-    public int ilosc;
+    public double ilosc;
+    public String jednostka;
     public double cena;
     public long idLista;
     public int idSklep;
@@ -18,7 +19,9 @@ public class ProductData {
 
     public String getNazwa(){return nazwa;}
 
-    public int getIlosc(){return ilosc;}
+    public double getIlosc(){return ilosc;}
+
+    public String getJednostka(){return jednostka;}
 
     public double getCena(){return cena;}
 

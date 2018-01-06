@@ -18,6 +18,7 @@ public class ListsProductContract {
         public static final String PRODUKT_NAZWA_TABELI = "produkty";
         public static final String PRODUKT_ID_PRODUKT = "id_produkt";
         public static final String PRODUKT_ILOSC = "ilosc";
+        public static final String PRODUKT_JEDNOSTKA = "jednostka";
         public static final String PRODUKT_CENA = "cena";
         public static final String PRODUKT_ID_LISTA = "id_lista";
         public static final String PRODUKT_NAZWA = "produkt_nazwa";

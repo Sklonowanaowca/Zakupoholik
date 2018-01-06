@@ -96,6 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from login.php (json string)
+                Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");

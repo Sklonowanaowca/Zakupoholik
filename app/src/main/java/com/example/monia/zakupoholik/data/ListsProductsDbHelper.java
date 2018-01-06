@@ -28,7 +28,8 @@ public class ListsProductsDbHelper extends SQLiteOpenHelper {
         String SQL_CREATE_PRODUCTS_TABLE = "CREATE TABLE " + ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI + "("
                 + ListsProductContract.ListsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT + " LONG NOT NULL, "
-                + ListsProductContract.ListsEntry.PRODUKT_ILOSC + " INTEGER NOT NULL, "
+                + ListsProductContract.ListsEntry.PRODUKT_ILOSC + " FLOAT NOT NULL, "
+                + ListsProductContract.ListsEntry.PRODUKT_JEDNOSTKA + " TEXT NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_CENA + " DOUBLE, "
                 + ListsProductContract.ListsEntry.PRODUKT_ID_LISTA + " LONG NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_NAZWA + " TEXT NOT NULL);";
