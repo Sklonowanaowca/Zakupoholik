@@ -197,6 +197,7 @@ public class ProductsActivity extends AppCompatActivity {
                     }
                 }
                 addProduct(ilosc,jednostka,idProduct,idLista);
+                loadProductsFromSerwerToSQLite(idLista);
             }
         };
         FetchIdProductsRequest fetchIdProductsRequest = new FetchIdProductsRequest(nazwaProduktu, responseListener);
@@ -215,7 +216,6 @@ public class ProductsActivity extends AppCompatActivity {
                     if(success) {
                         message = jsonObj.getString("message");
                         Toast.makeText(ProductsActivity.this, message, Toast.LENGTH_SHORT).show();
-                        loadProductsFromSerwerToSQLite(idLista);
                     } else {
                         message = jsonObj.getString("message");
                         Toast.makeText(ProductsActivity.this, message, Toast.LENGTH_SHORT).show();
