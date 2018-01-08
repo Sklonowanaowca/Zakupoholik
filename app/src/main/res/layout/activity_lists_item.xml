@@ -6,21 +6,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tv_lists_name"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"/>
+            android:layout_weight="1"
+            android:layout_height="0dp" />
 
         <TextView
             android:id="@+id/tv_lists_date"
-            style="@style/TextAppearance.AppCompat.Large"
+            style="@style/TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"/>
+            android:layout_weight="1"
+            android:layout_height="0dp" />
 
     </LinearLayout>
 
