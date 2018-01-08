@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -73,6 +74,30 @@ public class ProductsActivity extends AppCompatActivity {
         });
 
         //loadProductsFromSQLite();
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_products);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.hasFixedSize();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                long id = (long) viewHolder.itemView.getTag();
+                long idSerwer = getProductIdFromSerwer(id);
+                if(idSerwer!=-1) {
+                    deleteProductFromSerwer(idSerwer);
+                    removeProductFromSQLite(id);
+                    productAdapter.swapCursor(getAllProductsFromSQLite());
+                }
+                else
+                    Toast.makeText(ProductsActivity.this, "ooops id Twojej listy = -1", Toast.LENGTH_LONG).show();
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
     private void showAddProductDialog(){
@@ -102,7 +127,7 @@ public class ProductsActivity extends AppCompatActivity {
                 if (!nazwa.isEmpty()) {
                     String jednostkaZeSpinnera = spinnerJednostki.getSelectedItem().toString();
                     //Toast.makeText(ProductsActivity.this, "ilosc " + Integer.parseInt(ilosc) + ", jednostka " + jednostkaZeSpinnera, Toast.LENGTH_SHORT).show();
-                    getIdProduktowFromMysql(nazwa, Integer.parseInt(ilosc), jednostkaZeSpinnera, idLista);
+                    getIdProduktowFromMysql(nazwa, Double.parseDouble(ilosc), jednostkaZeSpinnera, idLista);
                 }
             }
         });
@@ -150,10 +175,6 @@ public class ProductsActivity extends AppCompatActivity {
     }
 
     private void loadProductsFromSQLite(){
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_products);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.hasFixedSize();
         productAdapter = new ProductsAdapter(ProductsActivity.this,getAllProductsFromSQLite());
         mRecyclerView.setAdapter(productAdapter);
     }
@@ -205,6 +226,20 @@ public class ProductsActivity extends AppCompatActivity {
         queue.add(fetchIdProductsRequest);
     }
 
+    private long getProductIdFromSerwer(long idSQLite){
+        String selectQuery = "select " + ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT + " from " + ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI
+                + " where " + ListsProductContract.ListsEntry._ID + " = " + idSQLite;
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        long idSerwer;
+
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            idSerwer = cursor.getInt(cursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT));
+        } else idSerwer=-1;
+        cursor.close();
+        return idSerwer;
+    }
+
     private void addProduct(double ilosc, String jednostka, int idProduktow, final int idLista){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
@@ -230,6 +265,30 @@ public class ProductsActivity extends AppCompatActivity {
         queue.add(addProductRequest);
     }
 
+    private void deleteProductFromSerwer(long idSerwer){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+
+            @Override
+            public void onResponse(String response) {// response from usun_produkt.php (json array)
+                if(response!=null && response.length()>0){
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        if(success)
+                            Toast.makeText(ProductsActivity.this, "Usunieto produkt", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(ProductsActivity.this, "Nie udalo sie usunac produktu", Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        DeleteProductRequest deleteProductRequest = new DeleteProductRequest(idSerwer, responseListener);
+        RequestQueue queue = Volley.newRequestQueue(ProductsActivity.this);
+        queue.add(deleteProductRequest);
+    }
+
     private Cursor getAllProductsFromSQLite() {
         return mDb.query(
                 ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI,
@@ -244,6 +303,10 @@ public class ProductsActivity extends AppCompatActivity {
 
     private boolean removeAllProductsFromSQLite(){
         return mDb.delete(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI,null, null) > 0;
+    }
+
+    private boolean removeProductFromSQLite(long id){
+        return mDb.delete(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI, ListsProductContract.ListsEntry._ID + "=" + id, null) > 0;
     }
 
     private long addProductToSQLite(int idProduct, double ilosc, String jednostka, double cena, long idLista, String nazwa) {

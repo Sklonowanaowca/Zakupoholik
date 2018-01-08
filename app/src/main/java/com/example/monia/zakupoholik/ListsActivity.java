@@ -89,7 +89,6 @@ public class ListsActivity extends AppCompatActivity{
                 long idSerwer = getListIdFromSerwer(id);
                 if(idSerwer!=-1) {
                     deleteListFromSerwer(idSerwer);
-                    Toast.makeText(ListsActivity.this, "Usunieto liste", Toast.LENGTH_SHORT).show();
                     removeListFromSQLite(id);
                     mListsAdapter.swapCursor(getListsFromSQLite());
                 }
@@ -99,9 +98,9 @@ public class ListsActivity extends AppCompatActivity{
         }).attachToRecyclerView(mRecyclerView);
     }
 
-    private long getListIdFromSerwer(long idSQlite){
+    private long getListIdFromSerwer(long idSQLite){
         String selectQuery = "select " + ListsProductContract.ListsEntry.ID_LISTA + " from " + ListsProductContract.ListsEntry.NAZWA_TABELI
-                + " where " + ListsProductContract.ListsEntry._ID + " = " + idSQlite;
+                + " where " + ListsProductContract.ListsEntry._ID + " = " + idSQLite;
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         long idSerwer;
 
@@ -193,7 +192,6 @@ public class ListsActivity extends AppCompatActivity{
                     String message="";
                     if(success) {
                         message = jsonObj.getString("message");
-                        loadListsFromSerwerToSQLite(idUserPublic);
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
                         message = jsonObj.getString("message");
@@ -202,6 +200,7 @@ public class ListsActivity extends AppCompatActivity{
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
+                loadListsFromSerwerToSQLite(idUserPublic);
             }
         };
         AddListsRequest addListsRequest = new AddListsRequest(nazwaListy, dataZakupow, idUserPublic, responseListener);
@@ -222,7 +221,7 @@ public class ListsActivity extends AppCompatActivity{
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
             @Override
-            public void onResponse(String response) {// response from pokaz_listy.php (json array)
+            public void onResponse(String response) {// response from usun_liste.php (json array)
                 if(response!=null && response.length()>0){
                     try{
                         JSONObject jsonObject = new JSONObject(response);
