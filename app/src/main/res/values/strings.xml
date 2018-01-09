@@ -54,4 +54,9 @@
         <item>kg</item>
         <item>dag</item>
     </string-array>
+
+    <!-- Strings related to renaming product in dialog-->
+    <string name="rename_product_ok_button">Zmień</string>
+    <string name="rename_product_cancel_button">Anuluj</string>
+
 </resources>

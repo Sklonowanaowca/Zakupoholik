@@ -141,10 +141,11 @@ public class ProductsActivity extends AppCompatActivity {
         b.show();
     }
 
-    private void loadProductsFromSerwerToSQLite(final int idList){
+    public void loadProductsFromSerwerToSQLite(final int idList){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_produkty.php (json array)
+                Toast.makeText(ProductsActivity.this, "id " + idList, Toast.LENGTH_SHORT).show();
                 if(response!=null && response.length()>0){
                     removeAllProductsFromSQLite();
                     try{
@@ -207,17 +208,17 @@ public class ProductsActivity extends AppCompatActivity {
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_id_produktow.php (json array)
-                int idProduct = 0;
+                int idProductow = 0;
                 if(response!=null && response.length()>0){
                     try{
                         JSONObject jsonObject = new JSONObject(response);
-                        idProduct = jsonObject.getInt("idProduktow");
+                        idProductow = jsonObject.getInt("idProduktow");
                         //Toast.makeText(ProductsActivity.this, "id " + idProduct, Toast.LENGTH_SHORT).show();
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
                 }
-                addProduct(ilosc,jednostka,idProduct,idLista);
+                addProduct(ilosc,jednostka,idProductow,idLista);
                 loadProductsFromSerwerToSQLite(idLista);
             }
         };
