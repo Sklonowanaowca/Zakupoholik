@@ -1,6 +1,7 @@
 package com.example.monia.zakupoholik;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +34,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+
 public class ListsActivity extends AppCompatActivity{
     private RecyclerView mRecyclerView;
     private TextView mNoListsMessage;
     private ListsAdapter mListsAdapter;
     private static int idUserPublic;
     private SQLiteDatabase mDb;
+    private int mYear;
+    private int mMonth;
+    private int mDay;
+    private String Month;
+    private String Day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +129,30 @@ public class ListsActivity extends AppCompatActivity{
         dialogBuilder.setView(dialogView);
 
         final EditText nazwa = (EditText) dialogView.findViewById(R.id.add_list_name);
-        final EditText data = (EditText) dialogView.findViewById(R.id.add_list_data);
+        final TextView data = (TextView) dialogView.findViewById(R.id.add_list_data);
+        Button wybierzDate = (Button) dialogView.findViewById(R.id.button_choose_date);
+
+        wybierzDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+
+                Day = checkDigit(mDay);
+                Month = checkDigit(mMonth);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(ListsActivity.this, new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth){
+                        monthOfYear+=1;
+                        data.setText(year+"-"+monthOfYear+"-"+dayOfMonth);
+                    }
+                }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+            }
+        });
 
         dialogBuilder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -138,6 +171,14 @@ public class ListsActivity extends AppCompatActivity{
         });
         AlertDialog b = dialogBuilder.create();
         b.show();
+    }
+
+    public String checkDigit(int number)
+    {
+        String result="";
+        if(number<10)
+            result =  "0"+number;
+        return result;
     }
 
     public void loadListsFromSerwerToSQLite(Integer id_user){

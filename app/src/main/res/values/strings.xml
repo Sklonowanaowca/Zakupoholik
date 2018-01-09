@@ -32,6 +32,7 @@
     <string name="add_list_data_hint">Data zakupów</string>
     <string name="add_list_positive_button">Dodaj liste</string>
     <string name="add_list_negative_button">Anuluj</string>
+    <string name="add_list_date_button">Wybierz datę</string>
 
     <!-- Strings related to renaming list in dialog-->
     <string name="rename_list_title">Zmień nazwę listy</string>
