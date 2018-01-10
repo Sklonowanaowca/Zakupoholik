@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
 import com.example.monia.zakupoholik.data.ListsProductContract;
 import com.example.monia.zakupoholik.data.ListsProductsDbHelper;
+import com.example.monia.zakupoholik.data.ShopData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,6 +77,7 @@ public class ListsActivity extends AppCompatActivity{
         mDb = listsProductsDbHelper.getWritableDatabase();
 
         loadListsFromSerwerToSQLite(idUserPublic);
+        loadShopsSignatures();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_list_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -258,6 +260,13 @@ public class ListsActivity extends AppCompatActivity{
         return mDb.insert(ListsProductContract.ListsEntry.NAZWA_TABELI, null, cv);
     }
 
+    private long addShopToSQLite(int idSklep, String sygnatura) {
+        ContentValues cv = new ContentValues();
+        cv.put(ListsProductContract.ListsEntry.SKLEP_ID_SKLEP, idSklep);
+        cv.put(ListsProductContract.ListsEntry.SYGNATURA, sygnatura);
+        return mDb.insert(ListsProductContract.ListsEntry.SKLEP_NAZWA_TABELI, null, cv);
+    }
+
     public void deleteListFromSerwer(long id_list){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
@@ -286,6 +295,10 @@ public class ListsActivity extends AppCompatActivity{
         return mDb.delete(ListsProductContract.ListsEntry.NAZWA_TABELI,null, null) > 0;
     }
 
+    private boolean removeAllSignaturesFromSQLite(){
+        return mDb.delete(ListsProductContract.ListsEntry.SKLEP_NAZWA_TABELI,null, null) > 0;
+    }
+
     private Cursor getListsFromSQLite() {
         return mDb.query(
                 ListsProductContract.ListsEntry.NAZWA_TABELI,
@@ -305,6 +318,35 @@ public class ListsActivity extends AppCompatActivity{
     private void showNoListsMessage(){
         mNoListsMessage.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    private void loadShopsSignatures(){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+
+            @Override
+            public void onResponse(String response) {// response from pokaz_listy.php (json array)
+                if(response!=null && response.length()>0){
+                    removeAllSignaturesFromSQLite();
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray sklepy = jsonObject.getJSONArray("shops");
+                        for (int i = 0; i < sklepy.length(); i++) {
+                            ShopData currentData = new ShopData();
+                            JSONObject json_data = sklepy.getJSONObject(i);
+                            currentData.idSklep = json_data.getInt("ID_Sklep");
+                            currentData.sygnatura = json_data.getString("Sygnatura");
+                            addShopToSQLite(currentData.getIdSklep(), currentData.getSygnatura());
+                        }
+                        loadListsFromSqlite();
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        FetchShopsSignaturesRequest fetchShopsSignaturesRequest = new FetchShopsSignaturesRequest(responseListener);
+        RequestQueue queue = Volley.newRequestQueue(ListsActivity.this);
+        queue.add(fetchShopsSignaturesRequest);
     }
 
     @Override

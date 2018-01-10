@@ -42,7 +42,6 @@
             android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="16sp"
-            android:text="@string/default_shop"
             android:layout_marginRight="16dp"/>
 
     </LinearLayout>

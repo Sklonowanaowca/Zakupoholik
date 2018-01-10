@@ -149,7 +149,6 @@ public class ProductsActivity extends AppCompatActivity {
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_produkty.php (json array)
-                Toast.makeText(ProductsActivity.this, "id " + idList, Toast.LENGTH_SHORT).show();
                 if(response!=null && response.length()>0){
                     removeAllProductsFromSQLite();
                     try{
@@ -164,8 +163,9 @@ public class ProductsActivity extends AppCompatActivity {
                             currentData.cena = json_data.getDouble("Cena");
                             currentData.idLista = json_data.getLong("ID_Lista");
                             currentData.nazwa = json_data.getString("Nazwa");
-                            addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.getJednostka(), currentData.cena,
-                                    currentData.getIdLista(), currentData.getNazwa());
+                            currentData.idSklep = json_data.getInt("ID_Sklep");
+                            addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.getJednostka(), currentData.getCena(),
+                                    currentData.getIdLista(), currentData.getNazwa(), currentData.getIdSklep());
                         }
                         loadProductsFromSQLite();
                     } catch (JSONException e){
@@ -338,7 +338,7 @@ public class ProductsActivity extends AppCompatActivity {
         return mDb.delete(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI, ListsProductContract.ListsEntry._ID + "=" + id, null) > 0;
     }
 
-    private long addProductToSQLite(int idProduct, double ilosc, String jednostka, double cena, long idLista, String nazwa) {
+    private long addProductToSQLite(int idProduct, double ilosc, String jednostka, double cena, long idLista, String nazwa, int idSklep) {
         ContentValues cv = new ContentValues();
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ID_PRODUKT, idProduct);
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ILOSC, ilosc);
@@ -346,6 +346,7 @@ public class ProductsActivity extends AppCompatActivity {
         cv.put(ListsProductContract.ListsEntry.PRODUKT_CENA, cena);
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ID_LISTA, idLista);
         cv.put(ListsProductContract.ListsEntry.PRODUKT_NAZWA, nazwa);
+        cv.put(ListsProductContract.ListsEntry.PRODUKT_ID_SKLEP, idSklep);
         return mDb.insert(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI, null, cv);
     }
 

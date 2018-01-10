@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.monia.zakupoholik.data.ListData;
 import com.example.monia.zakupoholik.data.ListsProductContract;
+import com.example.monia.zakupoholik.data.ListsProductsDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,9 +35,10 @@ import java.util.ArrayList;
  */
 
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ProductsAdapterViewHolder> {
-    private Cursor mCursor;
+    private Cursor mCursor, sCursor;
     private Context mContext;
     String[] allProductsFromMysqlDb;
+    SQLiteDatabase mDb;
 
     public ProductsAdapter(Context context, Cursor cursor){
         this.mContext = context;
@@ -48,12 +51,14 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         public final TextView mProductNameTextView;
         public final TextView mProductNumberTextView;
         public final TextView mProductUnitTextView;
+        public final TextView mShopSignature;
 
         public ProductsAdapterViewHolder(final View itemView) {
             super(itemView);
             mProductNameTextView = (TextView) itemView.findViewById(R.id.tv_products_name);
             mProductNumberTextView = (TextView) itemView.findViewById(R.id.tv_products_number);
             mProductUnitTextView = (TextView) itemView.findViewById(R.id.tv_products_unit);
+            mShopSignature = (TextView) itemView.findViewById(R.id.tv_shop_signature);
         }
     }
 
@@ -74,12 +79,23 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         String nazwaProduktu = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_NAZWA));
         float ilosc = mCursor.getFloat(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ILOSC));
         String jednostka = mCursor.getString(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_JEDNOSTKA));
-        long id = mCursor.getLong(mCursor.getColumnIndex(ListsProductContract.ListsEntry._ID));
+        long idSqliteProdukt = mCursor.getLong(mCursor.getColumnIndex(ListsProductContract.ListsEntry._ID));
+        int idSklep = mCursor.getInt(mCursor.getColumnIndex(ListsProductContract.ListsEntry.PRODUKT_ID_SKLEP));
+        if(idSklep!=0){
+            ListsProductsDbHelper listsProductsDbHelper = new ListsProductsDbHelper(mContext);
+            mDb = listsProductsDbHelper.getWritableDatabase();
+            String selection = ListsProductContract.ListsEntry.SKLEP_ID_SKLEP + " = " + idSklep;
+            sCursor = mDb.query(ListsProductContract.ListsEntry.SKLEP_NAZWA_TABELI, null, selection, null,null,null,null);
+            if(!sCursor.moveToFirst())
+                return;
+            String sygnatura = sCursor.getString(sCursor.getColumnIndex(ListsProductContract.ListsEntry.SYGNATURA));
+            holder.mShopSignature.setText(sygnatura);
+        }
         holder.mProductNameTextView.setText(nazwaProduktu);
         holder.mProductNumberTextView.setText(String.valueOf(ilosc));
         holder.mProductUnitTextView.setText(jednostka);
         // (7) Set the tag of the itemview in the holder to the id
-        holder.itemView.setTag(id);
+        holder.itemView.setTag(idSqliteProdukt);
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -236,7 +252,6 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(fetchAllProductsRequest);
     }
-
 
 
 //    private void renameRedateList(long id_list, String nazwaListy, String dataZakupow,final long idUzytkownika){

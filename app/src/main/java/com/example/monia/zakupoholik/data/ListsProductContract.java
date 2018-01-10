@@ -23,5 +23,11 @@ public class ListsProductContract {
         public static final String PRODUKT_ID_LISTA = "id_lista";
         public static final String PRODUKT_NAZWA = "produkt_nazwa";
         public static final String PRODUKT_ID_SKLEP = "id_sklep";
+
+
+        public static final String SKLEP_NAZWA_TABELI = "sklep";
+        public static final String SKLEP_ID_SKLEP = "id_sklep";
+        //public static final String SKLEP_NAZWA = "nazwa_sklepu";
+        public static final String SYGNATURA = "sygnatura";
     }
 }

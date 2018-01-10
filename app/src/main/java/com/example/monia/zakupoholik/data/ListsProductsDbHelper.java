@@ -32,10 +32,15 @@ public class ListsProductsDbHelper extends SQLiteOpenHelper {
                 + ListsProductContract.ListsEntry.PRODUKT_JEDNOSTKA + " TEXT NOT NULL, "
                 + ListsProductContract.ListsEntry.PRODUKT_CENA + " DOUBLE, "
                 + ListsProductContract.ListsEntry.PRODUKT_ID_LISTA + " LONG NOT NULL, "
-                + ListsProductContract.ListsEntry.PRODUKT_NAZWA + " TEXT NOT NULL);";
-                //+ ListsProductContract.ListsEntry.PRODUKT_ID_SKLEP + " INTEGER);";
+                + ListsProductContract.ListsEntry.PRODUKT_NAZWA + " TEXT NOT NULL, "
+                + ListsProductContract.ListsEntry.PRODUKT_ID_SKLEP + " INTEGER);";
+        String SQL_CREATE_SHOPS_TABLE = "CREATE TABLE " + ListsProductContract.ListsEntry.SKLEP_NAZWA_TABELI + "("
+                + ListsProductContract.ListsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + ListsProductContract.ListsEntry.SKLEP_ID_SKLEP + " INTEGER NOT NULL, "
+                + ListsProductContract.ListsEntry.SYGNATURA + " TEXT NOT NULL);";
         sqLiteDatabase.execSQL(SQL_CREATE_LISTS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_PRODUCTS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_SHOPS_TABLE);
     }
 
     @Override
