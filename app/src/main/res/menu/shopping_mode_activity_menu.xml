@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_shopping_mode"
-        android:icon="@drawable/shopping_mode"
+        android:id="@+id/menu_back_to_list_mode"
+        android:icon="@drawable/ic_list_mode"
         android:title="Shopping Mode"
         app:showAsAction="always" />
 </menu>

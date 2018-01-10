@@ -64,4 +64,6 @@
     <string name="choose_shop_hint">Wpisz nazwę sklepu</string>
     <string name="choose_shop_title">Wybierz sklep</string>
     <string name="choose_shop_ok_button">OK</string>
+
+    <string name="default_shop">-</string>
 </resources>

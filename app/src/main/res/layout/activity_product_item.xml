@@ -32,6 +32,19 @@
             android:layout_height="wrap_content"
             android:padding="16dp"/>
 
+        <TextView
+            android:id="@+id/tv_shop_signature"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:text="@string/default_shop"
+            android:layout_marginRight="16dp"/>
+
     </LinearLayout>
 
     <!--This View serves as a visual divider between list items-->
