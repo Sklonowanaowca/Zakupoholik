@@ -124,6 +124,7 @@ public class ShopingMode extends AppCompatActivity {
                 Gson gson = new Gson();
                 String checkedArrayString = gson.toJson(checked);
                 saveShopping(nazwaSklepu, checkedArrayString);
+                setResult(ShopingMode.RESULT_OK);
                 finish();
             default:
                 return super.onOptionsItemSelected(item);

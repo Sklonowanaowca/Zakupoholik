@@ -46,6 +46,7 @@ public class ProductsActivity extends AppCompatActivity {
     public String[] allShopsFromMysqlDb;
     int idLista = 0;
     String nazwaListy="";
+    private static final int REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,6 @@ public class ProductsActivity extends AppCompatActivity {
             }
         });
 
-        //loadProductsFromSQLite();
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_products);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -371,7 +371,7 @@ public class ProductsActivity extends AppCompatActivity {
                     Intent startShoppingMode = new Intent(ProductsActivity.this, ShopingMode.class);
                     startShoppingMode.putExtra("NAZWA_SKLEPU", nazwa);
                     startShoppingMode.putExtra("NAZWA_LISTY", nazwaListy);
-                    startActivity(startShoppingMode);
+                    startActivityForResult(startShoppingMode,REQUEST);
                 }
             }
         });
@@ -383,6 +383,15 @@ public class ProductsActivity extends AppCompatActivity {
         });
         AlertDialog b = dialogBuilder.create();
         b.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+            case REQUEST:
+                loadProductsFromSerwerToSQLite(idLista);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
