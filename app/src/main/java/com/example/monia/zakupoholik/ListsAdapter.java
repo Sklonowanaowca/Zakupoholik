@@ -99,8 +99,8 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
 
                 final
 
-                Button dialogOkButton = (Button) dialog.findViewById(R.id.ok_button);
-                Button dialogCancelButton = (Button) dialog.findViewById(R.id.cancel_button);
+                Button dialogOkButton = (Button) dialog.findViewById(R.id.rename_ok_button);
+                Button dialogCancelButton = (Button) dialog.findViewById(R.id.rename_cancel_button);
 
                 dialogOkButton.setOnClickListener(new View.OnClickListener() {
                     @Override

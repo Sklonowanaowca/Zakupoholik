@@ -13,9 +13,17 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         android:ems="10"
+        android:inputType="date"
         android:id="@+id/redate_list" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zmień datę"
+        android:id="@+id/redate_button"
+        android:layout_gravity="right"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,13 +34,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/rename_list_cancel_button"
-            android:id="@+id/cancel_button"
+            android:id="@+id/rename_cancel_button"
             android:layout_gravity="right" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/rename_list_ok_button"
-            android:id="@+id/ok_button"
+            android:id="@+id/rename_ok_button"
             android:layout_gravity="right"/>
 
     </LinearLayout>

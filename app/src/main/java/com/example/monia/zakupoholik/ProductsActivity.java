@@ -13,6 +13,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -40,14 +43,14 @@ public class ProductsActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ProductsAdapter productAdapter;
     public String[] allProductsFromMysqlDb;
+    public String[] allShopsFromMysqlDb;
     int idLista = 0;
+    String nazwaListy="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
-
-        String nazwaListy="";
 
         TextView mNazwaListyTextView = (TextView) findViewById(R.id.tv_nazwa_listy);
 
@@ -64,6 +67,7 @@ public class ProductsActivity extends AppCompatActivity {
 
         loadProductsFromSerwerToSQLite(idLista);
         loadAllProductsFromMysqlToArray();
+        loadAllShopsFromMysqlToArray();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_product_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +179,7 @@ public class ProductsActivity extends AppCompatActivity {
         queue.add(fetchProductsRequest);
     }
 
-    private void loadProductsFromSQLite(){
+    public void loadProductsFromSQLite(){
         productAdapter = new ProductsAdapter(ProductsActivity.this,getAllProductsFromSQLite());
         mRecyclerView.setAdapter(productAdapter);
     }
@@ -202,6 +206,30 @@ public class ProductsActivity extends AppCompatActivity {
         FetchAllProductsRequest fetchAllProductsRequest = new FetchAllProductsRequest(responseListener);
         RequestQueue queue = Volley.newRequestQueue(ProductsActivity.this);
         queue.add(fetchAllProductsRequest);
+    }
+
+    private void loadAllShopsFromMysqlToArray(){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response) {// response from pokaz_wszystkie_produkty.php (json array)
+                if(response!=null && response.length()>0){
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray sklepy = jsonObject.getJSONArray("shops");
+                        allShopsFromMysqlDb = new String[sklepy.length()];
+                        for (int i = 0; i < sklepy.length(); i++) {
+                            JSONObject json_data = sklepy.getJSONObject(i);
+                            allShopsFromMysqlDb[i] = json_data.getString("Nazwa");
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        FetchAllShopsRequest fetchAllShopsRequest = new FetchAllShopsRequest(responseListener);
+        RequestQueue queue = Volley.newRequestQueue(ProductsActivity.this);
+        queue.add(fetchAllShopsRequest);
     }
 
     private void getIdProduktowFromMysql(String nazwaProduktu, final double ilosc, final String jednostka, final int idLista){
@@ -319,6 +347,59 @@ public class ProductsActivity extends AppCompatActivity {
         cv.put(ListsProductContract.ListsEntry.PRODUKT_ID_LISTA, idLista);
         cv.put(ListsProductContract.ListsEntry.PRODUKT_NAZWA, nazwa);
         return mDb.insert(ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI, null, cv);
+    }
+
+    private void showChooseShopDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_choose_shop, null);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle(R.string.choose_shop_title);
+
+        final AutoCompleteTextView nazwaSklepu = (AutoCompleteTextView) dialogView.findViewById(R.id.atv_shop_name);
+
+        ArrayAdapter<String> productAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, allShopsFromMysqlDb);
+        productAdapter.setDropDownViewResource(R.layout.spinner_item);
+        nazwaSklepu.setThreshold(1);//min liczba znakow aby zlapalo podpowiedzi
+        nazwaSklepu.setAdapter(productAdapter);
+
+        dialogBuilder.setPositiveButton(R.string.choose_shop_ok_button, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String nazwa = nazwaSklepu.getText().toString().trim();
+                if (!nazwa.isEmpty()) {
+                    Intent startShoppingMode = new Intent(ProductsActivity.this, ShopingMode.class);
+                    startShoppingMode.putExtra("NAZWA_SKLEPU", nazwa);
+                    startShoppingMode.putExtra("NAZWA_LISTY", nazwaListy);
+                    startActivity(startShoppingMode);
+                }
+            }
+        });
+        dialogBuilder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.product_activity_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.menu_shopping_mode:
+                showChooseShopDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
