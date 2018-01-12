@@ -27,7 +27,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ListsActivity" />
         <activity android:name=".ProductsActivity" />
-        <activity android:name=".ShopingMode"></activity>
+        <activity android:name=".ShopingMode" />
+        <activity android:name=".AddNewProductToMysqlActivity"></activity>
     </application>
 
 </manifest>

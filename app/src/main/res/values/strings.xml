@@ -66,4 +66,8 @@
     <string name="choose_shop_ok_button">OK</string>
 
     <string name="default_shop">-</string>
+
+    <!-- Strings related to add new product to mysql-->
+    <string name="add_new_product_text">Wygląda na to, że jeszcze nie mamy tego produktu w bazie. Dodaje do bazy:</string>
+    <string name="add_new_product_choose_category">Wybierz kategorię:</string>
 </resources>

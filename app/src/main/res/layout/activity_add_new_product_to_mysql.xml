@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_add_new_product_title"
+        android:text="@string/add_new_product_text"
+        style="@style/Base.TextAppearance.AppCompat.Large"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_add_new_product_name"
+        android:textColor="@color/colorPrimaryDark"
+        android:gravity="center_horizontal"
+        style="@style/Base.TextAppearance.AppCompat.Large"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#9a9a9a"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_add_new_product_choose_category"
+        android:text="@string/add_new_product_choose_category"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"/>
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="80dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="16dp"
+        android:horizontalSpacing="16dp"
+        android:padding="16dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        />
+
+</LinearLayout>
+

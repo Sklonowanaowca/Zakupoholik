@@ -232,22 +232,27 @@ public class ProductsActivity extends AppCompatActivity {
         queue.add(fetchAllShopsRequest);
     }
 
-    private void getIdProduktowFromMysql(String nazwaProduktu, final double ilosc, final String jednostka, final int idLista){
+    private void getIdProduktowFromMysql(final String nazwaProduktu, final double ilosc, final String jednostka, final int idLista){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_id_produktow.php (json array)
-                int idProductow = 0;
+                int idProductow=0;
                 if(response!=null && response.length()>0){
                     try{
                         JSONObject jsonObject = new JSONObject(response);
                         idProductow = jsonObject.getInt("idProduktow");
-                        //Toast.makeText(ProductsActivity.this, "id " + idProduct, Toast.LENGTH_SHORT).show();
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
                 }
-                addProduct(ilosc,jednostka,idProductow,idLista);
-                loadProductsFromSerwerToSQLite(idLista);
+                if(idProductow==0) {
+                    Intent startAddNewProductActivity = new Intent(ProductsActivity.this, AddNewProductToMysqlActivity.class);
+                    startAddNewProductActivity.putExtra("NAZWA_PRODUKTU", nazwaProduktu);
+                    startActivity(startAddNewProductActivity);
+                } else {
+                    addProduct(ilosc, jednostka, idProductow, idLista);
+                    loadProductsFromSerwerToSQLite(idLista);
+                }
             }
         };
         FetchIdProductsRequest fetchIdProductsRequest = new FetchIdProductsRequest(nazwaProduktu, responseListener);
@@ -269,7 +274,7 @@ public class ProductsActivity extends AppCompatActivity {
         return idSerwer;
     }
 
-    private void addProduct(double ilosc, String jednostka, int idProduktow, final int idLista){
+    private void addProduct(double ilosc, String jednostka, final int idProduktow, final int idLista){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
@@ -416,5 +421,6 @@ public class ProductsActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         loadProductsFromSQLite();
+        loadAllProductsFromMysqlToArray();
     }
 }
