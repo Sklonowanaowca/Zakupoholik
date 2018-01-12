@@ -65,6 +65,7 @@ public class AddNewProductToMysqlActivity extends AppCompatActivity {
                     } else {
                         message = jsonObj.getString("message");
                         Toast.makeText(AddNewProductToMysqlActivity.this, message, Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 } catch (JSONException e){
                     e.printStackTrace();

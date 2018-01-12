@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,6 +47,7 @@ public class ProductsActivity extends AppCompatActivity {
     public String[] allShopsFromMysqlDb;
     int idLista = 0;
     String nazwaListy="";
+    String stringListToShare = "";
     private static final int REQUEST = 1;
 
     @Override
@@ -164,9 +166,11 @@ public class ProductsActivity extends AppCompatActivity {
                             currentData.idLista = json_data.getLong("ID_Lista");
                             currentData.nazwa = json_data.getString("Nazwa");
                             currentData.idSklep = json_data.getInt("ID_Sklep");
+                            stringListToShare+=currentData.getNazwa() + " - " + currentData.getIlosc() + " " + currentData.getJednostka() + "\n";
                             addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.getJednostka(), currentData.getCena(),
                                     currentData.getIdLista(), currentData.getNazwa(), currentData.getIdSklep());
                         }
+                        stringListToShare = stringListToShare.substring(0, stringListToShare.length() -1);
                         loadProductsFromSQLite();
                     } catch (JSONException e){
                         e.printStackTrace();
@@ -390,6 +394,12 @@ public class ProductsActivity extends AppCompatActivity {
         b.show();
     }
 
+    private void shareList(){
+        Toast.makeText(this, stringListToShare, Toast.LENGTH_SHORT).show();
+        Intent sendWeather = new Intent();
+        ShareCompat.IntentBuilder.from(this).setType("text/plain").setChooserTitle("Udostępnij listę").setText(stringListToShare).startChooser();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode){
@@ -411,6 +421,9 @@ public class ProductsActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.menu_shopping_mode:
                 showChooseShopDialog();
+                return true;
+            case R.id.menu_share:
+                shareList();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
