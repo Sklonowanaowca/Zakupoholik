@@ -23,7 +23,7 @@ public class ListsProductsDbHelper extends SQLiteOpenHelper {
                 + ListsProductContract.ListsEntry.ID_LISTA + " LONG NOT NULL, "
                 + ListsProductContract.ListsEntry.NAZWA_LISTY + " TEXT NOT NULL, "
                 + ListsProductContract.ListsEntry.DATA_ZAKUPOW + " DATE NOT NULL, "
-                //+ ListsProductContract.ListsEntry.KOSZT_ZAKUPOW + " DOUBLE);";
+                + ListsProductContract.ListsEntry.KOSZT_ZAKUPOW + " DOUBLE, "
                 + ListsProductContract.ListsEntry.ID_UZYTKOWNIKA + " LONG NOT NULL);";
         String SQL_CREATE_PRODUCTS_TABLE = "CREATE TABLE " + ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI + "("
                 + ListsProductContract.ListsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "

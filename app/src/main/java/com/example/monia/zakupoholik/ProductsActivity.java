@@ -94,6 +94,20 @@ public class ProductsActivity extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 long id = (long) viewHolder.itemView.getTag();
+                showAlertDialogBeforeDeleteProduct(id);
+            }
+        }).attachToRecyclerView(mRecyclerView);
+    }
+
+    private void showAlertDialogBeforeDeleteProduct(final long id){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_remove_product, null);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle(R.string.dialog_remove_product_title);
+
+        dialogBuilder.setPositiveButton(R.string.dialog_remove_list_button, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
                 long idSerwer = getProductIdFromSerwer(id);
                 if(idSerwer!=-1) {
                     deleteProductFromSerwer(idSerwer);
@@ -103,7 +117,16 @@ public class ProductsActivity extends AppCompatActivity {
                 else
                     Toast.makeText(ProductsActivity.this, "ooops id Twojej listy = -1", Toast.LENGTH_LONG).show();
             }
-        }).attachToRecyclerView(mRecyclerView);
+        });
+        dialogBuilder.setNegativeButton(R.string.rename_list_cancel_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+                loadProductsFromSQLite();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
     }
 
     private void showAddProductDialog(){
@@ -395,7 +418,6 @@ public class ProductsActivity extends AppCompatActivity {
     }
 
     private void shareList(){
-        Toast.makeText(this, stringListToShare, Toast.LENGTH_SHORT).show();
         Intent sendWeather = new Intent();
         ShareCompat.IntentBuilder.from(this).setType("text/plain").setChooserTitle("Udostępnij listę").setText(stringListToShare).startChooser();
     }

@@ -70,4 +70,14 @@
     <!-- Strings related to add new product to mysql-->
     <string name="add_new_product_text">Wygląda na to, że jeszcze nie mamy tego produktu w bazie. Dodaje do bazy:</string>
     <string name="add_new_product_choose_category">Wybierz kategorię:</string>
+
+    <!-- Strings related to remove  list dialog-->
+    <string name="dialog_remove_list_text">Czy na pewno chcesz usunąć listę?</string>
+    <string name="dialog_remove_list_title">Usuń listę</string>
+    <string name="dialog_remove_list_button">Usuń</string>
+    <string name="dialog_remove_list_cancel_button">Anuluj</string>
+
+    <!-- Strings related to remove  list dialog-->
+    <string name="dialog_remove_product_text">Czy na pewno chcesz usunąć produkt?</string>
+    <string name="dialog_remove_product_title">Usuń produkt</string>
 </resources>

@@ -6,22 +6,48 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_lists_name"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:id="@+id/tv_lists_date"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="0dp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_lists_name"
-            style="@style/TextAppearance.AppCompat.Large"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="0dp" />
+            android:id="@+id/tv_shopping_cost"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:layout_marginRight="16dp"/>
 
-        <TextView
-            android:id="@+id/tv_lists_date"
-            style="@style/TextAppearance.AppCompat.Small"
-            android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="0dp" />
+            android:layout_height="20dp"
+            android:src="@drawable/move_to_products"
+            android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
 

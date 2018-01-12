@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -46,8 +48,6 @@ public class ListsActivity extends AppCompatActivity{
     private int mYear;
     private int mMonth;
     private int mDay;
-    private String Month;
-    private String Day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +98,20 @@ public class ListsActivity extends AppCompatActivity{
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 long id = (long) viewHolder.itemView.getTag();
+                showAlertDialogBeforeDeleteList(id);
+            }
+        }).attachToRecyclerView(mRecyclerView);
+    }
+
+    private void showAlertDialogBeforeDeleteList(final long id){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_remove_list, null);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle(R.string.dialog_remove_list_title);
+
+        dialogBuilder.setPositiveButton(R.string.dialog_remove_list_button, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton) {
                 long idSerwer = getListIdFromSerwer(id);
                 if(idSerwer!=-1) {
                     deleteListFromSerwer(idSerwer);
@@ -107,7 +121,16 @@ public class ListsActivity extends AppCompatActivity{
                 else
                     Toast.makeText(ListsActivity.this, "ooops id Twojej listy = -1", Toast.LENGTH_LONG).show();
             }
-        }).attachToRecyclerView(mRecyclerView);
+        });
+        dialogBuilder.setNegativeButton(R.string.rename_list_cancel_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+                loadListsFromSqlite();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
     }
 
     private long getListIdFromSerwer(long idSQLite){
@@ -142,9 +165,6 @@ public class ListsActivity extends AppCompatActivity{
                 mMonth = c.get(Calendar.MONTH);
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
-                Day = checkDigit(mDay);
-                Month = checkDigit(mMonth);
-
                 DatePickerDialog datePickerDialog = new DatePickerDialog(ListsActivity.this, new DatePickerDialog.OnDateSetListener(){
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth){
@@ -175,14 +195,6 @@ public class ListsActivity extends AppCompatActivity{
         b.show();
     }
 
-    public String checkDigit(int number)
-    {
-        String result="";
-        if(number<10)
-            result =  "0"+number;
-        return result;
-    }
-
     public void loadListsFromSerwerToSQLite(Integer id_user){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
 
@@ -199,9 +211,11 @@ public class ListsActivity extends AppCompatActivity{
                                 currentData.idLista = json_data.getInt("ID_Lista");
                                 currentData.nazwaListy = json_data.getString("Nazwa_listy");
                                 currentData.dataZakupow = json_data.getString("Data_zakupow");
+                                currentData.kosztZakupow = json_data.getDouble("Koszt_zakupow");
                                 currentData.idUzytkownika = json_data.getInt("ID_Uzytkownika");
                                 addListToSQLite(json_data.getInt("ID_Lista"), json_data.getString("Nazwa_listy"),
-                                        json_data.getString("Data_zakupow"), json_data.getInt("ID_Uzytkownika"));
+                                        json_data.getString("Data_zakupow"), json_data.getDouble("Koszt_zakupow"),
+                                        json_data.getInt("ID_Uzytkownika"));
                             }
                         loadListsFromSqlite();
                     } catch (JSONException e){
@@ -251,11 +265,12 @@ public class ListsActivity extends AppCompatActivity{
         queue.add(addListsRequest);
     }
 
-    private long addListToSQLite(int idLista, String nazwaListy, String dataZakupow, int idUzytkownika) {
+    private long addListToSQLite(int idLista, String nazwaListy, String dataZakupow, double kosztZakupow, int idUzytkownika) {
         ContentValues cv = new ContentValues();
         cv.put(ListsProductContract.ListsEntry.ID_LISTA, idLista);
         cv.put(ListsProductContract.ListsEntry.NAZWA_LISTY, nazwaListy);
         cv.put(ListsProductContract.ListsEntry.DATA_ZAKUPOW, dataZakupow);
+        cv.put(ListsProductContract.ListsEntry.KOSZT_ZAKUPOW, kosztZakupow);
         cv.put(ListsProductContract.ListsEntry.ID_UZYTKOWNIKA, idUzytkownika);
         return mDb.insert(ListsProductContract.ListsEntry.NAZWA_TABELI, null, cv);
     }
