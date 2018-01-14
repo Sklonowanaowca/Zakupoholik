@@ -145,6 +145,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
                         else
                             koszt = Double.parseDouble(rekosztZakupow.getText().toString());
                         renameRedateList(idlisty,renazwaListy,redataZakupow,koszt,idUzytkownika);
+                        ((ListsActivity)mContext).loadListsFromSqlite();
                         dialog.dismiss();
                     }
                 });

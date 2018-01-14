@@ -47,7 +47,7 @@ public class ProductsActivity extends AppCompatActivity {
     public String[] allShopsFromMysqlDb;
     int idLista = 0;
     String nazwaListy="";
-    String stringListToShare = "";
+    String stringListToShare;
     private static final int REQUEST = 1;
 
     @Override
@@ -56,6 +56,8 @@ public class ProductsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_products);
 
         TextView mNazwaListyTextView = (TextView) findViewById(R.id.tv_nazwa_listy);
+
+        stringListToShare = "";
 
         Intent dataFromListsActivity = getIntent();
         if(dataFromListsActivity.hasExtra("ID") && dataFromListsActivity.hasExtra("NAZWA_LISTY")) {
@@ -193,7 +195,6 @@ public class ProductsActivity extends AppCompatActivity {
                             addProductToSQLite(currentData.getIdProdukt(), currentData.getIlosc(), currentData.getJednostka(), currentData.getCena(),
                                     currentData.getIdLista(), currentData.getNazwa(), currentData.getIdSklep());
                         }
-                        stringListToShare = stringListToShare.substring(0, stringListToShare.length() -1);
                         loadProductsFromSQLite();
                     } catch (JSONException e){
                         e.printStackTrace();

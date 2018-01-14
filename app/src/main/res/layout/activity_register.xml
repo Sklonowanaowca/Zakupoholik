@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorAccentLight" >
+    android:background="#ddd">
 
     <!-- register progress -->
     <ProgressBar
@@ -57,7 +57,8 @@
             android:id="@+id/et_haslo"
             android:hint="@string/passwd"
             android:textColor="@color/colorAccentDark"
-            android:textSize="26sp"/>
+            android:textSize="26sp"
+            android:inputType="textPassword"/>
 
         <EditText
             android:layout_width="match_parent"

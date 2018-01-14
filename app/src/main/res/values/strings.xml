@@ -80,4 +80,8 @@
     <!-- Strings related to remove  list dialog-->
     <string name="dialog_remove_product_text">Czy na pewno chcesz usunąć produkt?</string>
     <string name="dialog_remove_product_title">Usuń produkt</string>
+
+
+    <!-- Strings related to MapActivity-->
+    <string name="map_button_find_shops_near_me">Znajdź najbliższe sklepy</string>
 </resources>

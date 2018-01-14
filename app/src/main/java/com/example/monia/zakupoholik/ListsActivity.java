@@ -16,6 +16,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -229,7 +232,7 @@ public class ListsActivity extends AppCompatActivity{
         queue.add(fetchListsRequest);
     }
 
-    private void loadListsFromSqlite(){
+    public void loadListsFromSqlite(){
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lists);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -362,6 +365,25 @@ public class ListsActivity extends AppCompatActivity{
         FetchShopsSignaturesRequest fetchShopsSignaturesRequest = new FetchShopsSignaturesRequest(responseListener);
         RequestQueue queue = Volley.newRequestQueue(ListsActivity.this);
         queue.add(fetchShopsSignaturesRequest);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_lists_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_map:
+                Intent startMapActivity = new Intent(ListsActivity.this, MapActivity.class);
+                startActivity(startMapActivity);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
