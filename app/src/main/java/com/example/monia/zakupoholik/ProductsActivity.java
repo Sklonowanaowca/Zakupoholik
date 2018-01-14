@@ -45,6 +45,7 @@ public class ProductsActivity extends AppCompatActivity {
     private ProductsAdapter productAdapter;
     public String[] allProductsFromMysqlDb;
     public String[] allShopsFromMysqlDb;
+    public String[] allShopsAddressFromMYsqlDb;
     int idLista = 0;
     String nazwaListy="";
     String stringListToShare;
@@ -73,6 +74,7 @@ public class ProductsActivity extends AppCompatActivity {
         loadProductsFromSerwerToSQLite(idLista);
         loadAllProductsFromMysqlToArray();
         loadAllShopsFromMysqlToArray();
+        loadAllShopsAddressFromMysqlToArray();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_product_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -260,6 +262,30 @@ public class ProductsActivity extends AppCompatActivity {
         queue.add(fetchAllShopsRequest);
     }
 
+    private void loadAllShopsAddressFromMysqlToArray(){
+        Response.Listener<String> responseListener = new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response) {// response from pokaz_wszystkie_produkty.php (json array)
+                if(response!=null && response.length()>0){
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray sklepy = jsonObject.getJSONArray("shops");
+                        allShopsAddressFromMYsqlDb = new String[sklepy.length()];
+                        for (int i = 0; i < sklepy.length(); i++) {
+                            JSONObject json_data = sklepy.getJSONObject(i);
+                            allShopsAddressFromMYsqlDb[i] = json_data.getString("Adres");
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        FetchAllShopsAddressRequest fetchAllShopsRequest = new FetchAllShopsAddressRequest(responseListener);
+        RequestQueue queue = Volley.newRequestQueue(ProductsActivity.this);
+        queue.add(fetchAllShopsRequest);
+    }
+
     private void getIdProduktowFromMysql(final String nazwaProduktu, final double ilosc, final String jednostka, final int idLista){
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
@@ -391,18 +417,26 @@ public class ProductsActivity extends AppCompatActivity {
         dialogBuilder.setTitle(R.string.choose_shop_title);
 
         final AutoCompleteTextView nazwaSklepu = (AutoCompleteTextView) dialogView.findViewById(R.id.atv_shop_name);
+        final AutoCompleteTextView adresSklepu = (AutoCompleteTextView) dialogView.findViewById(R.id.atv_shop_address_name);
 
         ArrayAdapter<String> productAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, allShopsFromMysqlDb);
         productAdapter.setDropDownViewResource(R.layout.spinner_item);
         nazwaSklepu.setThreshold(1);//min liczba znakow aby zlapalo podpowiedzi
         nazwaSklepu.setAdapter(productAdapter);
 
+        ArrayAdapter<String> addressAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, allShopsAddressFromMYsqlDb);
+        addressAdapter.setDropDownViewResource(R.layout.spinner_item);
+        adresSklepu.setThreshold(1);//min liczba znakow aby zlapalo podpowiedzi
+        adresSklepu.setAdapter(addressAdapter);
+
         dialogBuilder.setPositiveButton(R.string.choose_shop_ok_button, new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton) {
                 String nazwa = nazwaSklepu.getText().toString().trim();
+                String adres = adresSklepu.getText().toString().trim();
                 if (!nazwa.isEmpty()) {
                     Intent startShoppingMode = new Intent(ProductsActivity.this, ShopingMode.class);
                     startShoppingMode.putExtra("NAZWA_SKLEPU", nazwa);
+                    startShoppingMode.putExtra("ADRES_SKLEPU", adres);
                     startShoppingMode.putExtra("NAZWA_LISTY", nazwaListy);
                     startActivityForResult(startShoppingMode,REQUEST);
                 }

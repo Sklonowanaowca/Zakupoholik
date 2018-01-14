@@ -37,6 +37,7 @@ import java.util.Iterator;
 public class ShopingMode extends AppCompatActivity {
     String nazwaSklepu = "";
     String nazwaListy = "";
+    String adresSklepu = "";
     SQLiteDatabase mDb;
     RecyclerView mRecyclerView;
     public ArrayList<String> checked;
@@ -50,6 +51,7 @@ public class ShopingMode extends AppCompatActivity {
 
         TextView nazwaL = (TextView) findViewById(R.id.tv_nazwa_listy);
         TextView nazwaS = (TextView) findViewById(R.id.tv_nazwa_sklepu);
+        TextView adresS = (TextView) findViewById(R.id.tv_adres_sklepu);
 
         checked = new ArrayList<String>();
 
@@ -57,8 +59,10 @@ public class ShopingMode extends AppCompatActivity {
         if (dataFromProductsActivity.hasExtra("NAZWA_SKLEPU") && dataFromProductsActivity.hasExtra("NAZWA_LISTY")) {
             nazwaSklepu = dataFromProductsActivity.getStringExtra("NAZWA_SKLEPU");
             nazwaListy = dataFromProductsActivity.getStringExtra("NAZWA_LISTY");
+            adresSklepu = dataFromProductsActivity.getStringExtra("ADRES_SKLEPU");
             nazwaS.setText(nazwaSklepu);
             nazwaL.setText(nazwaListy);
+            adresS.setText(adresSklepu);
             Toast.makeText(this, "Kupujesz w " + nazwaSklepu, Toast.LENGTH_SHORT).show();
         }
 

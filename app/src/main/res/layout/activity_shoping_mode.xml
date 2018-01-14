@@ -13,19 +13,36 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:layout_height="match_parent"
             android:id="@+id/tv_nazwa_listy"
             style="@style/Base.TextAppearance.AppCompat.Large"
             android:padding="16dp" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_nazwa_sklepu"
-            style="@style/Base.TextAppearance.AppCompat.Large"
-            android:padding="16dp" />
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:id="@+id/tv_nazwa_sklepu"
+                style="@style/Base.TextAppearance.AppCompat.Large"
+                android:paddingTop="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/tv_adres_sklepu"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:paddingBottom="5dp"/>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

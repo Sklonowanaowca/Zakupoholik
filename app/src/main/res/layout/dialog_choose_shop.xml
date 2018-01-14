@@ -10,4 +10,10 @@
         android:id="@+id/atv_shop_name"
         android:hint="@string/choose_shop_hint" />
 
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/atv_shop_address_name"
+        android:hint="@string/choose_shop_address_hint" />
+
 </LinearLayout>
