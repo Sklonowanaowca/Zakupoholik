@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -32,32 +35,23 @@ import org.json.JSONObject;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
     double latitude = 51.274;
     double longitude = 22.552;
+    GoogleMap mGoogleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        Button mFindShopsNearMe = (Button) findViewById(R.id.button_map_find_shops_near_me);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        mFindShopsNearMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                findShopsNearMe();
-            }
-        });
     }
 
-    private void findShopsNearMe() {
+    private void findShopsNearMe(final GoogleMap googleMap) {
         Response.Listener<String> responseListener = new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
                 if (response != null && response.length() > 0) {
-                    //removeAllSignaturesFromSQLite();
                     try {
                         JSONObject jsonObject = new JSONObject(response);
                         JSONArray sklepy = jsonObject.getJSONArray("shops");
@@ -65,14 +59,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             JSONObject json_data = sklepy.getJSONObject(i);
                             double lat = json_data.getDouble("Szerokosc_geogr");
                             double lon = json_data.getDouble("Dlugosc_geogr");
-                            Toast.makeText(MapActivity.this, "szer: " + lat + ", dl: " + lon, Toast.LENGTH_SHORT).show();
-//                            ShopData currentData = new ShopData();
-//
-//                            currentData.idSklep = json_data.getInt("ID_Sklep");
-//                            currentData.sygnatura = json_data.getString("Sygnatura");
-                            //addShopToSQLite(currentData.getIdSklep(), currentData.getSygnatura());
+                            String nazwa = json_data.getString("Nazwa");
+                            String adres = json_data.getString("Adres");
+                            LatLng nesrestShop = new LatLng(lat,lon);
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            markerOptions.position(nesrestShop);
+                            markerOptions.title(nazwa + "\n" + adres);
+                            googleMap.addMarker(markerOptions);
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nesrestShop,12));
                         }
-                        //loadListsFromSqlite();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -86,13 +81,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-       // LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        //if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ///Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//            latitude = 51.274;
-//            longitude = 22.552;
+        mGoogleMap = googleMap;
             LatLng lesz10 = new LatLng(latitude,longitude);
             googleMap.addMarker(new MarkerOptions().position(lesz10).title("TU JESTEŚ"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lesz10,12));
         }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.map_activity_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_find_nearest_shops:
+                findShopsNearMe(mGoogleMap);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
