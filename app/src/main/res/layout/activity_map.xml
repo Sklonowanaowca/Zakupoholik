@@ -16,11 +16,4 @@
         android:layout_weight="5"
         tools:context="com.example.monia.zakupoholik.MapActivity" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/map_button_find_shops_near_me"
-        android:id="@+id/button_map_find_shops_near_me"/>
-
   </LinearLayout>
