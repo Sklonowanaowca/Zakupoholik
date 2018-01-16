@@ -22,7 +22,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:padding="16dp"/>
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"/>
 
         <TextView
             android:id="@+id/tv_products_unit"
@@ -30,7 +31,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:padding="16dp"/>
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"/>
 
         <TextView
             android:id="@+id/tv_shop_signature"

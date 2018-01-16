@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
  */
 
 public class DeleteProductRequest extends StringRequest {
-    private static final String FETCH_LISTS_REQUEST_URL = "http://bozena-lublin.pl/zakupoholik_new/usun_liste.php";
+    private static final String FETCH_LISTS_REQUEST_URL = "http://bozena-lublin.pl/zakupoholik_new/usun_produkt.php";
     private Map<String, String> params;
 
     public DeleteProductRequest(long id_product, Response.Listener<String> listener){

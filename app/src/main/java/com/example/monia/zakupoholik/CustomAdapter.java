@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -47,18 +48,22 @@ public class CustomAdapter extends BaseAdapter {
             listViewHolder = new ViewHolder();
             convertView = layoutinflater.inflate(R.layout.activity_add_new_product_grid_item, parent, false);
             listViewHolder.mTextViewCategoryName = (TextView)convertView.findViewById(R.id.tv_grid_item_category_name);
+            listViewHolder.mImageViewCategoryPicture = (ImageView) convertView.findViewById(R.id.iv_category_picture);
             convertView.setTag(listViewHolder);
         }else{
             listViewHolder = (ViewHolder)convertView.getTag();
         }
 
         listViewHolder.mTextViewCategoryName.setText(listStorage.get(position).getContent());
+        int imageResourceId = mContext.getResources().getIdentifier(listStorage.get(position).getCategoryName(),"drawable", this.mContext.getPackageName());
+        listViewHolder.mImageViewCategoryPicture.setImageResource(imageResourceId);
 
         return convertView;
     }
 
     static class ViewHolder{
         TextView mTextViewCategoryName;
+        ImageView mImageViewCategoryPicture;
     }
 
 }

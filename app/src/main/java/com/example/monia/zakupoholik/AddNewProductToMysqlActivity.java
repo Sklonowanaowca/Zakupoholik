@@ -80,26 +80,26 @@ public class AddNewProductToMysqlActivity extends AppCompatActivity {
     private List<CategoryObject> getAllItemObject(){
         CategoryObject categoryObject = null;
         List<CategoryObject> items = new ArrayList<>();
-        items.add(new CategoryObject("Napoje"));
-        items.add(new CategoryObject("Owoce"));
-        items.add(new CategoryObject("Warzywa"));
-        items.add(new CategoryObject("Nabiał"));
-        items.add(new CategoryObject("Pieczywo"));
-        items.add(new CategoryObject("Słodycze"));
-        items.add(new CategoryObject("Mięso"));
-        items.add(new CategoryObject("Narzędzia"));
-        items.add(new CategoryObject("AGD"));
-        items.add(new CategoryObject("Elektronika"));
-        items.add(new CategoryObject("Odzież"));
-        items.add(new CategoryObject("Dom i ogród"));
-        items.add(new CategoryObject("Dziecko"));
-        items.add(new CategoryObject("Uroda i zdrowie"));
-        items.add(new CategoryObject("Kultura i rozrywka"));
-        items.add(new CategoryObject("Sport i wypoczynek"));
-        items.add(new CategoryObject("Motoryzacja"));
-        items.add(new CategoryObject("Kolekcje i sztuka"));
-        items.add(new CategoryObject("Firma"));
-        items.add(new CategoryObject("Inne"));
+        items.add(new CategoryObject("Napoje","napoje"));
+        items.add(new CategoryObject("Owoce", "owoce"));
+        items.add(new CategoryObject("Warzywa", "warzywa"));
+        items.add(new CategoryObject("Nabiał", "nabial"));
+        items.add(new CategoryObject("Pieczywo", "pieczywo"));
+        items.add(new CategoryObject("Słodycze", "slodycze"));
+        items.add(new CategoryObject("Mięso", "mieso"));
+        items.add(new CategoryObject("Narzędzia", "narzedzia"));
+        items.add(new CategoryObject("AGD", "agd"));
+        items.add(new CategoryObject("Elektronika", "elektronika"));
+        items.add(new CategoryObject("Odzież", "odziez"));
+        items.add(new CategoryObject("Dom i ogród", "dom_i_ogrod"));
+        items.add(new CategoryObject("Dziecko", "dziecko"));
+        items.add(new CategoryObject("Uroda i zdrowie", "zdrowie_i_uroda"));
+        items.add(new CategoryObject("Kultura i rozrywka", "kultura"));
+        items.add(new CategoryObject("sport", "sport"));
+        items.add(new CategoryObject("Motoryzacja", "motoryzacja"));
+        items.add(new CategoryObject("Kolekcje i sztuka", "sztuka"));
+        items.add(new CategoryObject("Firma", "firma"));
+        items.add(new CategoryObject("Inne", "inne"));
         return items;
     }
 
