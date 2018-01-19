@@ -25,6 +25,7 @@
     <string name="no_lists_message">
         Nie masz żadnych list
     </string>
+    <string name="action_logout_title">Wyloguj się</string>
 
     <!-- Strings related to creating new list in dialog-->
     <string name="add_list_title">Nowa lista</string>

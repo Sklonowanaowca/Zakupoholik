@@ -47,6 +47,7 @@ public class ListsProductsDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ListsProductContract.ListsEntry.NAZWA_TABELI);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ListsProductContract.ListsEntry.PRODUKT_NAZWA_TABELI);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ListsProductContract.ListsEntry.SKLEP_NAZWA_TABELI);
         onCreate(sqLiteDatabase);
     }
 }

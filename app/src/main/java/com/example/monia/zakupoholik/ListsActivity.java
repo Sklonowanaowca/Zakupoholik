@@ -381,6 +381,14 @@ public class ListsActivity extends AppCompatActivity{
                 Intent startMapActivity = new Intent(ListsActivity.this, MapActivity.class);
                 startActivity(startMapActivity);
                 return true;
+            case R.id.action_logout:
+                SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(LoginActivity.KEY_ID_UZYTKOWNIKA, 0);
+                editor.apply();
+                Intent startLoginActivity = new Intent(ListsActivity.this, LoginActivity.class);
+                startActivity(startLoginActivity);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

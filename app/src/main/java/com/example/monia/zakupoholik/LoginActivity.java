@@ -61,11 +61,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordEditText;
     private Button mZalogujSieButton;
     private TextView mZarejestrujSieTextView;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        preferences = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
+        int idUser = preferences.getInt(KEY_ID_UZYTKOWNIKA,0);
+        if(idUser!=0){
+            String imie = preferences.getString(KEY_IMIE,"");
+            Intent listy = new Intent(LoginActivity.this, ListsActivity.class);
+            listy.putExtra(KEY_ID_UZYTKOWNIKA, idUser);
+            listy.putExtra(KEY_IMIE, imie);
+            LoginActivity.this.startActivity(listy);
+        }
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mLoginEditText = (EditText) findViewById(R.id.et_login);
