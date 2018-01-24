@@ -86,7 +86,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onResponse(String response) {// response from pokaz_listy.php (json array)
                 if (response != null && response.length() > 0) {
-                    Toast.makeText(MapActivity.this, response, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MapActivity.this, response, Toast.LENGTH_SHORT).show();
                     try {
                         JSONObject jsonObject = new JSONObject(response);
                         JSONArray sklepy = jsonObject.getJSONArray("shops");

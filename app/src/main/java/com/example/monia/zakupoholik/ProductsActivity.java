@@ -47,7 +47,7 @@ public class ProductsActivity extends AppCompatActivity {
     public String[] allShopsFromMysqlDb;
     public String[] allShopsAddressFromMYsqlDb;
     int idLista = 0;
-    String nazwaListy="";
+    String nazwaListy;
     String stringListToShare;
     private static final int REQUEST = 1;
 
@@ -179,6 +179,7 @@ public class ProductsActivity extends AppCompatActivity {
             public void onResponse(String response) {// response from pokaz_produkty.php (json array)
                 if(response!=null && response.length()>0){
                     removeAllProductsFromSQLite();
+                    stringListToShare="";
                     try{
                         JSONObject jsonObject = new JSONObject(response);
                         JSONArray produkty = jsonObject.getJSONArray("products");
@@ -420,7 +421,6 @@ public class ProductsActivity extends AppCompatActivity {
     }
 
     private void shareList(){
-        Intent sendWeather = new Intent();
         ShareCompat.IntentBuilder.from(this).setType("text/plain").setChooserTitle("Udostępnij listę").setText(stringListToShare).startChooser();
     }
 
