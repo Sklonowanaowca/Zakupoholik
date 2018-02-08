@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             listy.putExtra(KEY_ID_UZYTKOWNIKA, idUser);
             listy.putExtra(KEY_IMIE, imie);
             LoginActivity.this.startActivity(listy);
+            finish();
         }
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -107,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Response.Listener<String> responseListener = new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {// response from login.php (json string)
-                Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(LoginActivity.this, response, Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     boolean success = jsonObject.getBoolean("success");
@@ -118,12 +119,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         listy.putExtra(KEY_ID_UZYTKOWNIKA, idUzytkownika);
                         listy.putExtra(KEY_IMIE, imie);
                         LoginActivity.this.startActivity(listy);
+                        finish();
                     } else{
                         String message = jsonObject.getString("message");
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setMessage(message).setNegativeButton("Spróbuj jeszcze raz", null).create().show();
                         mLoginEditText.setText("");
                         mPasswordEditText.setText("");
+                        mLoginEditText.setFocusable(true);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

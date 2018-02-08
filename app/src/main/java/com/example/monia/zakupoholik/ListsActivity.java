@@ -325,6 +325,7 @@ public class ListsActivity extends AppCompatActivity{
                 null,
                 null,
                 null,
+                ListsProductContract.ListsEntry.ID_LISTA + " DESC",
                 null
         );
     }

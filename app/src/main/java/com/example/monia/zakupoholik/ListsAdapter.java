@@ -203,7 +203,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ListsAdapter
                         JSONObject jsonObject = new JSONObject(response);
                         boolean success = jsonObject.getBoolean("success");
                         if(success)
-                            Toast.makeText(mContext, "Zmieniono nazwe listy", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "Zapisano zmiany", Toast.LENGTH_SHORT).show();
                         else
                             Toast.makeText(mContext, "Ooops! Coś poszło nie tak...", Toast.LENGTH_SHORT).show();
                         ((ListsActivity)mContext).loadListsFromSerwerToSQLite((int)idUzytkownika);
